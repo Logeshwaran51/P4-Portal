@@ -144,5 +144,45 @@ public class P4ClientsService {
         return result;
 
     }
+
+    public Map<String, ArrayList<String>> listAllReloadClients(Map<String,?> listReloadClients) {
+        Map<String, ArrayList<String>> listUnloadClientmap = new HashMap<>();
+        ArrayList<String> clientsUnloadArr = new ArrayList<>();
+        try {
+            p4.setSERVER_URI((String) listReloadClients.get("server"));
+            p4.setUSER_NAME((String) listReloadClients.get("user"));
+            IOptionsServer server = p4.getOptionsServer();
+
+            GetClientsOptions getClientsOptions = new GetClientsOptions();
+            getClientsOptions.setUserName((String) listReloadClients.get("user"));
+            boolean unloaded = true;
+            getClientsOptions.setUnloaded(unloaded);
+            List<IClientSummary> clientList = server.getClients(getClientsOptions);
+            if (clientList == null) {
+                System.err.println("Client list is null");
+                return listUnloadClientmap;
+            }
+            for (IClientSummary clientSummary : clientList) {
+
+
+                if (clientSummary == null) {
+                    System.err.println("null Client in clients list");
+                    continue;
+                }
+
+                clientsUnloadArr.add(clientSummary.getName());
+
+            }
+
+            server.disconnect();
+            listUnloadClientmap.put("clients", clientsUnloadArr);
+
+        } catch (P4JavaException | URISyntaxException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+        return listUnloadClientmap;
+
+    }
 }
 

@@ -147,4 +147,37 @@ public class P4LabelsService {
         return result;
 
     }
+
+    public Map<String, ArrayList<String>> listAllReloadLabels(Map<String,?> listReloadLabels) {
+        Map<String, ArrayList<String>> listReloadLabelmap = new HashMap<>();
+        ArrayList<String> labelsArr = new ArrayList<>();
+        try {
+            p4.setSERVER_URI((String) listReloadLabels.get("server"));
+            p4.setUSER_NAME((String) listReloadLabels.get("user"));
+            IOptionsServer server = p4.getOptionsServer();
+
+            List<IFileSpec> fileSpecs = new ArrayList<>();
+
+
+            GetLabelsOptions options = new GetLabelsOptions();
+            options.setUserName((String) listReloadLabels.get("user"));
+            boolean unloaded = true;
+            options.setUnloaded(unloaded);
+
+            List<ILabelSummary> labels = server.getLabels(fileSpecs, options);
+
+            if (labels != null && !labels.isEmpty()) {
+                for (ILabelSummary label : labels) {
+                    labelsArr.add(label.getName());
+                }
+            } else {
+                labelsArr.add("No labels found.");
+            }
+        }catch (P4JavaException | URISyntaxException e) {
+            labelsArr.add("Error: " + e.getMessage());
+        }
+        listReloadLabelmap.put("labels",labelsArr);
+        return listReloadLabelmap;
+
+    }
 }

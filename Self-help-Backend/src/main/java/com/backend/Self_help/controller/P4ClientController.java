@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class P4ClientController {
 
@@ -17,6 +18,10 @@ public class P4ClientController {
     @PostMapping("/clients")
     public Map<String, ArrayList<String>> listClient(@RequestBody Map<String, ?> listClients) {
         return p4client.listAllClients(listClients);
+    }
+    @PostMapping("/clientsReloadList")
+    public Map<String, ArrayList<String>> listReloadClient(@RequestBody Map<String, ?> listReloadClients) {
+        return p4client.listAllReloadClients(listReloadClients);
     }
 
     @DeleteMapping("/clientDelete")

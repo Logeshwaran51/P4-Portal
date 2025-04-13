@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +23,23 @@ public class ListServerService {
         return info.printServerInfo(server_json);
     }
 
-    public List<ServerModel> getAllServers(){
-        return server.findAll();
+    public Map<String,?> getAllServers(){
+        List<ServerModel> servers = server.findAll(); // assuming server.findAll() returns List<ServerModel>
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Servers fetched successfully");
+        response.put("data", servers);
+        return  response;
     }
 
-    public void addServer(ServerModel serverModel) {
-        server.save(serverModel);
+    public boolean addServer(ServerModel serverModel) {
+        try {
+            server.save(serverModel);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 }

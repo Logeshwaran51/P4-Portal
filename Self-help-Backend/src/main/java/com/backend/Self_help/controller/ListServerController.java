@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class ListServerController {
 
@@ -18,14 +19,13 @@ public class ListServerController {
     ListServerService server;
 
     @GetMapping("/servers")
-    public List<ServerModel> getAllServers(){
+    public Map<String,?> getAllServers(){
         return server.getAllServers();
     }
 
     @PostMapping("/addServer")
-    public void addServer(@RequestBody ServerModel serverModel){
-        server.addServer(serverModel);
-
+    public boolean addServer(@RequestBody ServerModel serverModel){
+        return server.addServer(serverModel);
     }
     @PostMapping("/serverInfo")
     public Map<String, String> getServerInfo(@RequestBody Map<String, ?> server_json){

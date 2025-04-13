@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class P4LabelController {
 
@@ -17,6 +18,11 @@ public class P4LabelController {
     @PostMapping("/labels")
     public Map<String, ArrayList<String>> listLabel(@RequestBody Map<String, ?> listLabels) {
         return p4Label.listAllLabels(listLabels);
+    }
+
+    @PostMapping("/labelsReloadList")
+    public Map<String, ArrayList<String>> listReloadLabel(@RequestBody Map<String, ?> listReloadLabels) {
+        return p4Label.listAllReloadLabels(listReloadLabels);
     }
 
     @DeleteMapping("/labelDelete")
