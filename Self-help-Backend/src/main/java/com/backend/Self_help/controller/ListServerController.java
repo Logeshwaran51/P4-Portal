@@ -3,11 +3,9 @@ package com.backend.Self_help.controller;
 
 import com.backend.Self_help.model.ServerModel;
 import com.backend.Self_help.service.ListServerService;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
