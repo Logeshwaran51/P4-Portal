@@ -25,6 +25,12 @@ public class ListServerController {
     public boolean addServer(@RequestBody ServerModel serverModel){
         return server.addServer(serverModel);
     }
+
+    @PostMapping("/removeServer")
+    public boolean removeServer(@RequestBody ServerModel serverModel){
+        return server.removeServer(serverModel);
+    }
+
     @PostMapping("/serverInfo")
     public Map<String, String> getServerInfo(@RequestBody Map<String, ?> server_json){
        return server.p4_info(server_json);

@@ -2,7 +2,6 @@ package com.backend.Self_help.service;
 
 import com.backend.Self_help.model.ServerModel;
 import com.backend.Self_help.repository.ServerRepo;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +38,27 @@ public class ListServerService {
             return true;
         } catch (Exception e) {
             System.out.println(e);
+            return false;
+        }
+    }
+
+    public boolean removeServer(ServerModel serverModel) {
+        try {
+            List<ServerModel> serverList = server.findAll();
+
+            String serverNameToDelete = serverModel.getServer();
+
+            for (ServerModel s : serverList) {
+                if (serverNameToDelete.equals(s.getServer())) {
+                    server.delete(s);  // Use getter from Lombok
+                    return true;
+                }
+            }
+
+            System.out.println("Server not found: " + serverNameToDelete);
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error deleting server: " + e.getMessage());
             return false;
         }
     }

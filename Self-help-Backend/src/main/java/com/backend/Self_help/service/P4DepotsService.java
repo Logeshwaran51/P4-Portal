@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class P4DepotsService {
@@ -20,81 +17,81 @@ public class P4DepotsService {
     @Autowired
     PerforceService p4;
 
-    public Map<String, ?> listDepots(Map<String,?> listDepot) {
-        Map<String, ArrayList<String>> listDepotmap = new HashMap<>();
-        ArrayList<String> depotArr = new ArrayList<>();
+    public Map<String, ?> listDepots(Map<String, ?> listDepot) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> depotList = new ArrayList<>();
+
         try {
+            // Set Perforce connection details
             p4.setSERVER_URI((String) listDepot.get("server"));
             p4.setUSER_NAME((String) listDepot.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
+            // Fetch depots from server
             List<IDepot> depots = server.getDepots();
 
             if (depots != null && !depots.isEmpty()) {
                 for (IDepot depot : depots) {
-                    depotArr.add(depot.getName());
+                    depotList.add(depot.getName());
                 }
+                response.put("success", true);
+                response.put("message", "Depots fetched successfully");
+                response.put("data", depotList);
             } else {
-                depotArr.add("No depots found on the server.");
+                response.put("success", false);
+                response.put("message", "No depots found on the server");
+                response.put("data", Collections.emptyList());
             }
 
-            listDepotmap.put("depots",depotArr);
             server.disconnect();
 
         } catch (P4JavaException | URISyntaxException e) {
-            System.err.println("Error: " + e.getMessage());
+            response.put("success", false);
+            response.put("message", "Error fetching depots: " + e.getMessage());
+            response.put("data", Collections.emptyList());
         }
-        return listDepotmap;
+
+        return response;
     }
 
-    public Map<String,?> createDepot(Map<String,?> createDepot) {
+
+    public Map<String, ?> createDepot(Map<String, ?> createDepot) {
+        Map<String, Object> response = new HashMap<>();
         Map<String, String> createDepotResult = new HashMap<>();
+
         try {
             p4.setSERVER_URI((String) createDepot.get("server"));
             p4.setUSER_NAME((String) createDepot.get("user"));
             IOptionsServer server = p4.getOptionsServer();
-            String depotType = (String) createDepot.get("depotType");
             Depot depot = new Depot();
 
-            if (depotType.equalsIgnoreCase("local")){
-                depot.setDepotType(IDepot.DepotType.LOCAL);
-            } else if (depotType.equalsIgnoreCase("spec")) {
-                depot.setDepotType(IDepot.DepotType.SPEC);
-            } else if (depotType.equalsIgnoreCase("remote")) {
-                depot.setDepotType(IDepot.DepotType.REMOTE);
-            }else if (depotType.equalsIgnoreCase("stream")) {
-                depot.setDepotType(IDepot.DepotType.STREAM);
-            }else if (depotType.equalsIgnoreCase("archive")) {
-                depot.setDepotType(IDepot.DepotType.ARCHIVE);
-            }else if (depotType.equalsIgnoreCase("tangent")) {
-                depot.setDepotType(IDepot.DepotType.TANGENT);
-            }else if (depotType.equalsIgnoreCase("extension")) {
-                depot.setDepotType(IDepot.DepotType.EXTENSION);
-            }else if (depotType.equalsIgnoreCase("unload")) {
-                depot.setDepotType(IDepot.DepotType.UNLOAD);
-            }else if (depotType.equalsIgnoreCase("graph")) {
-                depot.setDepotType(IDepot.DepotType.GRAPH);
-            }else{
-                depot.setDepotType(IDepot.DepotType.UNKNOWN);
-            }
-
+            depot.setDepotType(IDepot.DepotType.LOCAL);
             depot.setOwnerName((String) createDepot.get("user"));
             depot.setName((String) createDepot.get("depotName"));
             depot.setMap((String) createDepot.get("depotMap"));
 
             createDepotResult.put("result", server.createDepot(depot));
-            createDepotResult.put("depotName",(String) createDepot.get("depotName"));
-            createDepotResult.put("depotType",(String) createDepot.get("depotType"));
-            createDepotResult.put("depotMap",(String) createDepot.get("depotMap"));
+            createDepotResult.put("depotName", (String) createDepot.get("depotName"));
+            createDepotResult.put("depotMap", (String) createDepot.get("depotMap"));
+
+            response.put("success", true);
+            response.put("message", "Depot created successfully");
+            response.put("data", createDepotResult);
+
             server.disconnect();
 
         } catch (P4JavaException | URISyntaxException e) {
-            createDepotResult.put("error",e.getMessage());
+            response.put("success", false);
+            response.put("message", "Error creating depot: " + e.getMessage());
+            response.put("data", Collections.emptyMap());
         }
-        return createDepotResult;
+
+        return response;
     }
 
-    public Map<String,?> deleteDepot(Map<String,?> deleteDepots) {
+
+    public Map<String, ?> deleteDepot(Map<String, ?> deleteDepots) {
+        Map<String, Object> response = new HashMap<>();
         Map<String, Object> deleteDepotResult = new HashMap<>();
         ArrayList<String> deleteDepotArr = new ArrayList<>();
         ArrayList<String> errors = new ArrayList<>();
@@ -123,11 +120,16 @@ public class P4DepotsService {
                 deleteDepotResult.put("errors", errors);
             }
 
+            response.put("success", errors.isEmpty());
+            response.put("message", errors.isEmpty() ? "Depots deleted successfully" : "Some depots failed to delete");
+            response.put("data", deleteDepotResult.isEmpty() ? Collections.emptyMap() : deleteDepotResult);
+
         } catch (P4JavaException | URISyntaxException e) {
-            deleteDepotResult.put("error", e.getMessage());
-            System.out.println(deleteDepotResult);
+            response.put("success", false);
+            response.put("message", "Error deleting depots: " + e.getMessage());
+            response.put("data", Collections.emptyMap());
         }
 
-        return deleteDepotResult;
+        return response;
     }
 }

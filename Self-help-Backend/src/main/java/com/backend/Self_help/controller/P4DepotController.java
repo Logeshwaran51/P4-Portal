@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class P4DepotController {
 
