@@ -1,17 +1,9 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
-import {
-  FormGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Alert
-} from "@mui/material"
+import { FormControl, InputLabel, Select, MenuItem, Alert } from "@mui/material"
 import axios from "axios"
-import P4ServerDropDown from "./P4ServerDropDown"
 import { useSelector } from "react-redux"
+import "../index.css"
 
 function P4DepotDropDown({ selectDepot, setSelectDepot }) {
   const [dropDownDepot, setDropDownDepot] = useState([])
@@ -59,21 +51,16 @@ function P4DepotDropDown({ selectDepot, setSelectDepot }) {
 
   return (
     <>
-      {error && (
-        <Alert severity="error" sx={{ marginBottom: "10px" }}>
-          {error}
-        </Alert>
-      )}
-      {message && (
-        <Alert severity="success" sx={{ marginBottom: "10px" }}>
-          {message}
-        </Alert>
-      )}
-
       {dropDownDepot.length !== 0 && (
-        <FormControl sx={{ minWidth: "100%", marginTop: "10px" }}>
-          <InputLabel id="p4depots">Select Depot</InputLabel>
+        <FormControl
+          className="p4-form-control"
+          sx={{ minWidth: "100%", marginTop: "10px" }}
+        >
+          <InputLabel className="p4-input-label" id="p4depots">
+            Select Depot
+          </InputLabel>
           <Select
+            className="p4-select"
             labelId="p4depots"
             id="p4depots-select"
             label="Select depot"
@@ -81,7 +68,7 @@ function P4DepotDropDown({ selectDepot, setSelectDepot }) {
             onChange={handleDepotChange}
           >
             {dropDownDepot.map((depot, index) => (
-              <MenuItem key={index} value={depot}>
+              <MenuItem className="p4-menu-item" key={index} value={depot}>
                 {depot}
               </MenuItem>
             ))}

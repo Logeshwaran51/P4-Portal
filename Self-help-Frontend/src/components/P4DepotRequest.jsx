@@ -1,13 +1,8 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
 import {
-  FormGroup,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  Alert,
   FormControlLabel,
   FormLabel,
   RadioGroup,
@@ -20,6 +15,7 @@ import P4DepotDropDown from "./P4DepotDropDown"
 import { useDispatch, useSelector } from "react-redux"
 import P4ServerDropDown from "./P4ServerDropDown"
 import { setServerReducer } from "../store/p4serverSlice"
+import "../index.css"
 
 const P4DepotRequest = () => {
   const [depotRequest, setDepotRequest] = useState("")
@@ -28,7 +24,6 @@ const P4DepotRequest = () => {
   const [depotCreationBool, setdepotCreationBool] = useState(false)
   const [depotRemoveBool, setdepotRemoveBool] = useState(false)
   const [selectDepot, setSelectDepot] = useState("")
-  const [inputPathField, setInputPathField] = useState("")
 
   const handleSetDepotRequest = (item) => {
     console.log(item.target.value)
@@ -58,8 +53,8 @@ const P4DepotRequest = () => {
         const body = {
           server: selectedServer,
           user: "ulaga",
-          depotName: inputField,
-          depotMap: inputField + "/..."
+          depotName: inputDepotField,
+          depotMap: inputDepotField + "/..."
         }
 
         let serverCreationResponse = await axios.post(
@@ -117,13 +112,21 @@ const P4DepotRequest = () => {
         e.preventDefault()
         handleClientSubmit()
       }}
+      className="p4-form-container"
       sx={{ width: "100%", marginTop: "10px" }}
     >
-      <P4ServerDropDown />
+      <P4ServerDropDown className="p4-subcomponent" />
 
-      <FormControl fullWidth sx={{ marginBottom: "20px", marginTop: "20px" }}>
-        <FormLabel id="depots-radio-group-label">Depot Request</FormLabel>
+      <FormControl
+        className="p4-form-control"
+        fullWidth
+        sx={{ marginBottom: "20px", marginTop: "20px" }}
+      >
+        <FormLabel className="p4-form-label" id="depots-radio-group-label">
+          Depot Request
+        </FormLabel>
         <RadioGroup
+          className="p4-radio-group"
           aria-labelledby="depots-radio-group-label"
           name="depots-radio-group"
           value={depotRequest}
@@ -132,8 +135,9 @@ const P4DepotRequest = () => {
           {DepotRequestType.map((item, index) => (
             <FormControlLabel
               key={index}
+              className="p4-radio-option"
               value={item}
-              control={<Radio />}
+              control={<Radio className="p4-radio-button" />}
               label={item}
             />
           ))}
@@ -141,8 +145,13 @@ const P4DepotRequest = () => {
       </FormControl>
 
       {depotCreationBool && (
-        <FormControl fullWidth sx={{ marginBottom: "20px" }}>
+        <FormControl
+          className="p4-form-control"
+          fullWidth
+          sx={{ marginBottom: "20px" }}
+        >
           <TextField
+            className="p4-text-field"
             id="filled-basic"
             label="Enter a Depot Name (Eg: frontend)"
             variant="filled"
@@ -154,12 +163,18 @@ const P4DepotRequest = () => {
 
       {depotRemoveBool && (
         <P4DepotDropDown
+          className="p4-subcomponent"
           selectDepot={selectDepot}
           setSelectDepot={setSelectDepot}
         />
       )}
 
-      <Button variant="contained" type="submit" sx={{ marginTop: "20px" }}>
+      <Button
+        className="p4-submit-button"
+        variant="contained"
+        type="submit"
+        sx={{ marginTop: "20px" }}
+      >
         Submit
       </Button>
     </Box>

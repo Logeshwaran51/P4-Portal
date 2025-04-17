@@ -1,13 +1,8 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
 import {
-  FormGroup,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  Alert,
   FormControlLabel,
   FormLabel,
   RadioGroup,
@@ -19,6 +14,7 @@ import axios from "axios"
 import P4ServerDropDown from "./P4ServerDropDown"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
+import "../index.css"
 
 const P4ServerRequest = () => {
   const [serverRequest, setServerRequest] = useState("")
@@ -113,11 +109,19 @@ const P4ServerRequest = () => {
           e.preventDefault()
           handleClientSubmit()
         }}
+        className="p4-form-container"
         sx={{ width: "100%", marginTop: "10px" }}
       >
-        <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-          <FormLabel id="servers-radio-group-label">Server Request</FormLabel>
+        <FormControl
+          className="p4-form-control"
+          fullWidth
+          sx={{ marginBottom: "20px" }}
+        >
+          <FormLabel className="p4-form-label" id="servers-radio-group-label">
+            Server Request
+          </FormLabel>
           <RadioGroup
+            className="p4-radio-group"
             aria-labelledby="servers-radio-group-label"
             name="servers-radio-group"
             value={serverRequest}
@@ -126,8 +130,9 @@ const P4ServerRequest = () => {
             {ServerRequestType.map((item, index) => (
               <FormControlLabel
                 key={index}
+                className="p4-radio-option"
                 value={item}
-                control={<Radio />}
+                control={<Radio className="p4-radio-button" />}
                 label={item}
               />
             ))}
@@ -135,8 +140,13 @@ const P4ServerRequest = () => {
         </FormControl>
 
         {serverAddBool && (
-          <FormControl fullWidth sx={{ marginBottom: "20px" }}>
+          <FormControl
+            className="p4-form-control"
+            fullWidth
+            sx={{ marginBottom: "20px" }}
+          >
             <TextField
+              className="p4-text-field"
               id="filled-basic"
               label="Enter a Server (Eg: localhost:1669)"
               variant="filled"
@@ -147,11 +157,15 @@ const P4ServerRequest = () => {
         )}
 
         {serverRemoveBool && (
-          <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-            <P4ServerDropDown />
+          <FormControl
+            className="p4-form-control"
+            fullWidth
+            sx={{ marginBottom: "20px" }}
+          >
+            <P4ServerDropDown className="p4-subcomponent" />
           </FormControl>
         )}
-        <Button variant="contained" type="submit">
+        <Button className="p4-submit-button" variant="contained" type="submit">
           Submit
         </Button>
       </Box>

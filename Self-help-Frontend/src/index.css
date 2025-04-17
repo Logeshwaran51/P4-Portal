@@ -1,0 +1,216 @@
+/* Full site background */
+body {
+  background-color: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Main container styling */
+.p4-container {
+  max-width: 935px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Form container */
+.p4-form-container {
+  background-color: #ffffff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 25px;
+  margin: 20px 0;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Form elements container */
+.p4-form-group {
+  background-color: #ffffff;
+  border-radius: 8px;
+  width: 100%;
+}
+
+/* Form control styling */
+.p4-form-control {
+  margin-bottom: 20px;
+  width: 100%;
+  position: relative;
+}
+
+/* Select dropdown styling */
+.p4-select {
+  width: 100% !important;
+}
+
+.p4-select .MuiSelect-select {
+  padding: 14px 16px !important;
+  font-size: 14px !important;
+  background-color: transparent !important;
+}
+
+/* Menu styling */
+.MuiPaper-root.MuiMenu-paper {
+  max-height: 300px !important;
+  margin-top: 5px !important;
+  border: 1px solid #dbdbdb !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Menu item styling */
+.p4-menu-item {
+  font-size: 14px !important;
+  padding: 10px 16px !important;
+  min-height: 0 !important;
+}
+
+/* Radio group styling */
+.p4-radio-group {
+  margin-top: 10px !important;
+  padding-left: 5px !important;
+}
+
+.p4-radio-option {
+  margin: 8px 0 !important;
+}
+
+.p4-radio-button {
+  color: #0095f6 !important;
+  padding: 8px !important;
+}
+
+/* Submit button styling */
+.p4-submit-button {
+  background-color: #0095f6 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 10px 24px !important;
+  font-size: 14px !important;
+  margin-top: 15px !important;
+  width: 100%;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+/* Focus states */
+.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #a8a8a8 !important;
+  border-width: 1px !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: #dbdbdb !important;
+}
+
+/* Alert styling */
+.p4-alert {
+  border-radius: 8px !important;
+  margin-bottom: 15px !important;
+  font-size: 14px !important;
+  align-items: center !important;
+}
+
+.p4-alert-error {
+  background-color: #feeaea !important;
+  color: #d32f2f !important;
+  border: 1px solid #f5c2c7 !important;
+}
+
+.p4-alert-success {
+  background-color: #edf7ed !important;
+  color: #2e7d32 !important;
+  border: 1px solid #badbcc !important;
+}
+
+/* Depot select specific styling */
+.p4-form-control .p4-select {
+  margin-top: 15px !important;
+}
+
+/* Ensure dropdown menu consistency */
+.p4-select .MuiSelect-select {
+  padding: 14px 16px !important;
+}
+
+.p4-select .MuiOutlinedInput-notchedOutline {
+  border-color: #dbdbdb !important;
+}
+/* Text field styling */
+.p4-text-field .MuiFilledInput-root {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border-radius: 8px !important;
+  border: 1px solid #dbdbdb !important;
+}
+
+.p4-text-field .MuiFilledInput-root:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.p4-text-field .MuiFilledInput-root.Mui-focused {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  border-color: #a8a8a8 !important;
+}
+
+.p4-text-field .MuiInputLabel-filled {
+  color: #8e8e8e !important;
+  font-size: 14px !important;
+}
+
+.p4-text-field .MuiFilledInput-input {
+  padding: 16px 12px !important;
+  font-size: 14px !important;
+}
+
+/* Subcomponent consistency */
+.p4-subcomponent {
+  margin: 20px 0 !important;
+  width: 100% !important;
+}
+
+/* Additional consistent styles */
+.p4-form-label {
+  color: #262626 !important;
+  font-weight: 500 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+.p4-text-field .MuiFilledInput-root {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.p4-text-field .MuiFilledInput-root:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.p4-text-field .MuiFilledInput-root.Mui-focused {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Input label styling */
+.p4-input-label {
+  color: #8e8e8e !important;
+  font-size: 14px !important;
+  transform: translate(14px, 16px) scale(1) !important;
+}
+
+/* Label when focused or filled */
+.p4-input-label.Mui-focused,
+.p4-input-label.MuiFormLabel-filled {
+  transform: translate(14px, 6px) scale(0.9) !important; /* Reduced from -9px to -6px */
+  background-color: white !important;
+  padding: 0 4px !important;
+  left: -5px !important; /* Added to better align with border */
+}
+
+/* Select container */
+.p4-select .MuiOutlinedInput-root {
+  padding-top: 0 !important;
+}
+
+/* Adjust the notch */
+.p4-select .MuiOutlinedInput-notchedOutline legend {
+  width: auto !important;
+  max-width: none !important;
+}

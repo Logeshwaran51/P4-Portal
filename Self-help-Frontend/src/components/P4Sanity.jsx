@@ -1,25 +1,11 @@
 import * as React from "react"
-import { useState, useEffect } from "react"
-import {
-  FormGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Alert,
-  FormControlLabel,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  Box,
-  TextField
-} from "@mui/material"
+import { useState } from "react"
+import { FormControl, Button, Box, TextField } from "@mui/material"
 import axios from "axios"
-import P4DepotDropDown from "./P4DepotDropDown"
 import { useDispatch, useSelector } from "react-redux"
 import P4ServerDropDown from "./P4ServerDropDown"
 import { setServerReducer } from "../store/p4serverSlice"
+import "../index.css"
 
 function P4Sanity() {
   const [inputP4PathField, setInputP4PathField] = useState("")
@@ -66,12 +52,18 @@ function P4Sanity() {
           e.preventDefault()
           handleClientSubmit()
         }}
+        className="p4-form-container"
         sx={{ width: "100%", marginTop: "10px" }}
       >
-        <P4ServerDropDown />
+        <P4ServerDropDown className="p4-subcomponent" />
 
-        <FormControl fullWidth sx={{ marginBottom: "20px", marginTop: "20px" }}>
+        <FormControl
+          className="p4-form-control"
+          fullWidth
+          sx={{ marginBottom: "20px", marginTop: "20px" }}
+        >
           <TextField
+            className="p4-text-field"
             id="filled-basic"
             label="Enter a Path (Eg: //depot/...)"
             variant="filled"
@@ -80,7 +72,12 @@ function P4Sanity() {
           />
         </FormControl>
 
-        <Button variant="contained" type="submit" sx={{ marginTop: "20px" }}>
+        <Button
+          className="p4-submit-button"
+          variant="contained"
+          type="submit"
+          sx={{ marginTop: "20px" }}
+        >
           Submit
         </Button>
       </Box>

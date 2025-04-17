@@ -1,18 +1,19 @@
 import * as React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
+
 import {
   FormGroup,
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  Button,
-  Alert
+  MenuItem
 } from "@mui/material"
-import axios from "axios"
-import P4ServerDropDown from "./P4ServerDropDown"
+
 import P4ClientRequest from "./P4ClientRequest"
 import P4LabelRequest from "./P4LabelRequest"
+import "../index.css"
+import { useDispatch, useSelector } from "react-redux"
+import { setServerReducer } from "../store/p4serverSlice"
 
 const P4UserHome = () => {
   const [dropDownRequestType, setDropDownRequestType] = useState("")
@@ -21,49 +22,57 @@ const P4UserHome = () => {
 
   const P4RequestType = ["Client Request", "Label Request"]
 
+  let selectedServer = useSelector((state) => {
+    return state.p4server
+  })
+
+  let dispatch = useDispatch()
+
   const handleRequestTypeChange = (item) => {
     if (item.target.value === "Client Request") {
       setClientBool(true)
       setLabelBool(false)
+      if (selectedServer) {
+        dispatch(setServerReducer(""))
+      }
     } else if (item.target.value === "Label Request") {
       setLabelBool(true)
       setClientBool(false)
+      if (selectedServer) {
+        dispatch(setServerReducer(""))
+      }
     }
     setDropDownRequestType(item.target.value)
   }
 
   return (
     <>
-      <h1>P4 User SH</h1>
-      <FormGroup>
-        <FormControl sx={{ minWidth: "100%" }}>
-          <InputLabel id="request-type">Select Request Type</InputLabel>
-          <Select
-            labelId="request-type"
-            id="request-type-select"
-            label="Select Request Type"
-            value={dropDownRequestType}
-            onChange={handleRequestTypeChange}
-          >
-            {P4RequestType.map((item, index) => (
-              <MenuItem key={index} value={item}>
-                {item}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <P4ServerDropDown />
-        {clientBool && (
-          <>
-            <P4ClientRequest />
-          </>
-        )}
-        {labelBool && (
-          <>
-            <P4LabelRequest />
-          </>
-        )}
-      </FormGroup>
+      <div className="p4-container">
+        <h1 className="p4-title">P4 User SH</h1>
+
+        <FormGroup className="p4-form-group">
+          <FormControl className="p4-form-control" sx={{ minWidth: "100%" }}>
+            <InputLabel id="request-type">Select Request Type</InputLabel>
+            <Select
+              labelId="request-type"
+              id="request-type-select"
+              label="Select Request Type"
+              value={dropDownRequestType}
+              onChange={handleRequestTypeChange}
+            >
+              {P4RequestType.map((item, index) => (
+                <MenuItem key={index} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {clientBool && <P4ClientRequest className="p4-subcomponent" />}
+
+          {labelBool && <P4LabelRequest className="p4-subcomponent" />}
+        </FormGroup>
+      </div>
     </>
   )
 }

@@ -12,6 +12,7 @@ import {
 import axios from "axios"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
+import "../index.css"
 
 const P4ServerDropDown = () => {
   const [dropDownServer, setDropDownServer] = useState([])
@@ -49,26 +50,24 @@ const P4ServerDropDown = () => {
 
   return (
     <>
-      {error && (
-        <Alert severity="error" sx={{ marginBottom: "10px" }}>
-          {error}
-        </Alert>
-      )}
-      {message && (
-        <Alert severity="success" sx={{ marginBottom: "10px" }}>
-          {message}
-        </Alert>
-      )}
-      <FormControl sx={{ minWidth: "100%", marginTop: "10px" }}>
-        <InputLabel id="p4servers">Select Server</InputLabel>
+      <FormControl
+        className="p4-form-control"
+        fullWidth
+        variant="outlined"
+        sx={{ marginTop: "10px" }}
+      >
+        <InputLabel id="server-select-label" className="p4-input-label">
+          Select Server
+        </InputLabel>
         <Select
-          labelId="p4servers"
-          id="p4servers-select"
+          labelId="server-select-label"
+          id="server-select"
           label="Select Server"
           value={selectedServer}
           onChange={handleServerChange}
+          className="p4-select"
         >
-          {dropDownServer.map((server, index) => (
+          {dropDownServer.map((server) => (
             <MenuItem key={server._id} value={server.server}>
               {server.server}
             </MenuItem>
