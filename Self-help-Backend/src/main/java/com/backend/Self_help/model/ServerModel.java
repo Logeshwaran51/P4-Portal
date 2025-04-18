@@ -1,17 +1,11 @@
 package com.backend.Self_help.model;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Component;
 
+
 @Component
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Document(collection = "servers")
+@Document(collection = "ServerDB")
 public class ServerModel {
 
     public String get_id() {
