@@ -1,6 +1,5 @@
 import {
   Box,
-  FormGroup,
   FormControl,
   InputLabel,
   Select,
@@ -15,7 +14,9 @@ import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import axios from "axios"
 import "../index.css"
+import "../swal-custom.css"
 import P4ServerDropDown from "./P4ServerDropDown"
+import Swal from "sweetalert2"
 
 const P4ClientRequest = () => {
   const [p4clients, setp4Clients] = useState("")
@@ -37,7 +38,7 @@ const P4ClientRequest = () => {
 
   const getClients = async () => {
     try {
-      const data = {
+      const body = {
         server: selectedServer,
         user: "ulaga"
       }
@@ -45,59 +46,151 @@ const P4ClientRequest = () => {
       if (clientRequest === "Reload") {
         response = await axios.post(
           "http://localhost:8080/api/clientsReloadList",
-          data
+          body
         )
       } else {
-        response = await axios.post("http://localhost:8080/api/clients", data)
+        response = await axios.post("http://localhost:8080/api/clients", body)
       }
 
-      let { clients } = response.data
-      setclientsDropdown([...clients])
+      let { data, error, status } = response.data
+      console.log(response.data)
+      if (status) {
+        setclientsDropdown([...data])
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
+      }
 
-      if (!clients.includes(p4clients)) {
+      if (!data.includes(p4clients)) {
         setp4Clients("")
       }
     } catch (error) {
-      console.error("Error posting client data:", error)
+      Swal.fire({
+        title: "Error!",
+        text: error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 
   let handleClientSubmit = async () => {
     try {
-      const data = {
+      const body = {
         server: selectedServer,
         user: "ulaga",
         clients: [p4clients]
       }
+
       let clientSubmitResponse = ""
+      let operation = ""
+
       if (clientRequest === "Delete") {
+        operation = "deleted"
         clientSubmitResponse = await axios.delete(
           "http://localhost:8080/api/clientDelete",
-          {
-            data: data
-          }
+          { data: body }
         )
       } else if (clientRequest === "Unload") {
+        operation = "unloaded"
         clientSubmitResponse = await axios.post(
           "http://localhost:8080/api/clientUnload",
-          data
+          body
         )
       } else if (clientRequest === "Reload") {
+        operation = "reloaded"
         clientSubmitResponse = await axios.post(
           "http://localhost:8080/api/clientReload",
-          data
+          body
         )
       } else {
         console.log("No API")
+        return
       }
 
-      if (clientSubmitResponse.data) {
+      let { data, error, status } = clientSubmitResponse.data
+      if (status) {
+        Swal.fire({
+          title: "Success!",
+          text: data,
+          icon: "success",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#0095f6",
+          confirmButtonText: "OK",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
         console.log(clientSubmitResponse.data)
         setp4Clients("")
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
       setclientRequest("")
     } catch (error) {
       console.error("Error posting client data:", error)
+      Swal.fire({
+        title: "Error!",
+        text: `Failed to ${clientRequest.toLowerCase()} client: ${
+          error.message
+        }`,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 
