@@ -24,20 +24,18 @@ public class P4LabelsService {
     @Autowired
     PerforceService p4;
 
-    public Map<String, ArrayList<String>> listAllLabels(Map<String,?> listLabels) {
-
-        Map<String, ArrayList<String>> listLabelmap = new HashMap<>();
+    public Map<String, Object> listAllLabelsService(Map<String, ?> listLabelsBody) {
+        Map<String, Object> response = new HashMap<>();
         ArrayList<String> labelsArr = new ArrayList<>();
+
         try {
-            p4.setSERVER_URI((String) listLabels.get("server"));
-            p4.setUSER_NAME((String) listLabels.get("user"));
+            p4.setSERVER_URI((String) listLabelsBody.get("server"));
+            p4.setUSER_NAME((String) listLabelsBody.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
             List<IFileSpec> fileSpecs = new ArrayList<>();
-
-
             GetLabelsOptions options = new GetLabelsOptions();
-            options.setUserName((String) listLabels.get("user"));
+            options.setUserName((String) listLabelsBody.get("user"));
 
             List<ILabelSummary> labels = server.getLabels(fileSpecs, options);
 
@@ -46,138 +44,270 @@ public class P4LabelsService {
                     labelsArr.add(label.getName());
                 }
             } else {
+                // No labels found
                 labelsArr.add("No labels found.");
             }
-        }catch (P4JavaException | URISyntaxException e) {
-            labelsArr.add("Error: " + e.getMessage());
+
+            server.disconnect();
+
+            // Success response
+            response.put("status", true);
+            response.put("data", labelsArr);
+            response.put("error", null);
+
+        } catch (P4JavaException | URISyntaxException e) {
+            System.err.println("Error: " + e.getMessage());
+
+            // Error response
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
         }
-        listLabelmap.put("labels",labelsArr);
-        return listLabelmap;
+
+        return response;
     }
 
-    public ArrayList<String> deleteLabels(Map<String,?> deleteLabelsList) {
-        ArrayList<String> result = new ArrayList<>();
+    public Map<String, Object> listAllReloadLabelsService(Map<String, ?> listReloadLabelsBody) {
+        Map<String, Object> response = new HashMap<>();
+        ArrayList<String> labelsArr = new ArrayList<>();
+
         try {
-            p4.setSERVER_URI((String) deleteLabelsList.get("server"));
-            p4.setUSER_NAME((String) deleteLabelsList.get("user"));
+            p4.setSERVER_URI((String) listReloadLabelsBody.get("server"));
+            p4.setUSER_NAME((String) listReloadLabelsBody.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
-            Object labelsObject = deleteLabelsList.get("labels");
+            List<IFileSpec> fileSpecs = new ArrayList<>();
 
-            List<String> labelNames = (List<String>) labelsObject;
+            GetLabelsOptions options = new GetLabelsOptions();
+            options.setUserName((String) listReloadLabelsBody.get("user"));
+            options.setUnloaded(true);
 
-            for(String labelName : labelNames){
+            List<ILabelSummary> labels = server.getLabels(fileSpecs, options);
+
+            if (labels == null) {
+                System.err.println("Labels list is null");
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "Labels list is null");
+                return response;
+            }
+
+            for (ILabelSummary label : labels) {
+                if (label == null) {
+                    System.err.println("null Label in labels list");
+                    continue;
+                }
+                labelsArr.add(label.getName());
+            }
+
+            server.disconnect();
+            response.put("status", true);
+            response.put("data", labelsArr);
+            response.put("error", null);
+
+        } catch (P4JavaException | URISyntaxException e) {
+            System.err.println("Error: " + e.getMessage());
+            // Error Response
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
+        }
+
+        return response;
+
+    }
+
+    public Map<String, Object> deleteLabelsService(Map<String, ?> deleteLabelsListBody) {
+        Map<String, Object> response = new HashMap<>();
+        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> resultErr = new ArrayList<>();
+
+        try {
+            p4.setSERVER_URI((String) deleteLabelsListBody.get("server"));
+            p4.setUSER_NAME((String) deleteLabelsListBody.get("user"));
+            IOptionsServer server = p4.getOptionsServer();
+
+            Object labelsObject = deleteLabelsListBody.get("labels");
+            List<String> labelNames = new ArrayList<>();
+
+            if (labelsObject instanceof List<?>) {
+                for (Object item : (List<?>) labelsObject) {
+                    if (item instanceof String) {
+                        labelNames.add((String) item);
+                    }
+                }
+            } else {
+                // Handle if labelsObject is not a list
+                System.err.println("labels is not a list");
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "labels is not a list");
+                return response;
+            }
+
+            for (String labelName : labelNames) {
                 boolean forceDelete = true;
                 try {
-                    result.add(server.deleteLabel(labelName,forceDelete));
-
+                    result.add(server.deleteLabel(labelName, forceDelete));
                 } catch (RequestException e) {
-                    result.add(e.getMessage());
+                    resultErr.add(e.getMessage());
                 }
             }
 
-        }catch (P4JavaException | URISyntaxException e) {
-            result.add("Error: " + e.getMessage());
+            server.disconnect();
+
+            // Build success response
+            if (resultErr.isEmpty()) {
+                response.put("status", true);
+            } else {
+                response.put("status", false);
+            }
+            response.put("data", result);
+            response.put("error", resultErr);
+
+        } catch (P4JavaException | URISyntaxException e) {
+            System.err.println("Error: " + e.getMessage());
+
+            // Build error response
+            response.put("status", false);
+            response.put("data", new ArrayList<>());  // Empty list on error
+            response.put("error", e.getMessage());
         }
 
-        return result;
-
+        return response;
     }
 
-    public ArrayList<String> unloadLabels(Map<String,?> unloadLabelsList) {
+    public Map<String, Object> unloadLabelsService(Map<String,?> unloadLabelsListBody) {
+        Map<String, Object> response = new HashMap<>();
         ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> resultErr = new ArrayList<>();
+
         try {
-            p4.setSERVER_URI((String) unloadLabelsList.get("server"));
-            p4.setUSER_NAME((String) unloadLabelsList.get("user"));
+            p4.setSERVER_URI((String) unloadLabelsListBody.get("server"));
+            p4.setUSER_NAME((String) unloadLabelsListBody.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
-            Object labelsObject = unloadLabelsList.get("labels");
+            Object labelsObject = unloadLabelsListBody.get("labels");
 
-            List<String> labelNames = (List<String>) labelsObject;
+            List<String> labelNames = new ArrayList<>();
+
+            if (labelsObject instanceof List<?>) {
+                for (Object item : (List<?>) labelsObject) {
+                    if (item instanceof String) {
+                        labelNames.add((String) item);
+                    }
+                }
+            } else {
+                // Handle if labelsObject is not a list
+                System.err.println("labels is not a list");
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "labels is not a list");
+                return response;
+            }
+
             UnloadOptions unloadOptions = new UnloadOptions();
 
-
             for(String labelName : labelNames){
-                boolean forceDelete = true;
                 try {
                     unloadOptions.setLabel(labelName);
                     result.add(server.unload(unloadOptions));
 
                 } catch (RequestException e) {
-                    result.add(e.getMessage());
+                    resultErr.add(e.getMessage());
                 }
             }
+            server.disconnect();
+
+            // Success response
+            if(resultErr.isEmpty()){
+                response.put("status", true);
+            }else {
+                response.put("status", false);
+            }
+            response.put("data", result);
+            response.put("error", resultErr);
 
         }catch (P4JavaException | URISyntaxException e) {
-            result.add("Error: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
+
+            // Error response
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
         }
 
-        return result;
+
+        return response;
 
     }
 
-    public ArrayList<String> reloadLabels(Map<String,?> reloadLabelsList) {
+    public Map<String, Object> reloadLabelsService(Map<String,?> reloadLabelsListBody) {
+
+        Map<String, Object> response = new HashMap<>();
         ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> resultErr = new ArrayList<>();
+
         try {
-            p4.setSERVER_URI((String) reloadLabelsList.get("server"));
-            p4.setUSER_NAME((String) reloadLabelsList.get("user"));
+            p4.setSERVER_URI((String) reloadLabelsListBody.get("server"));
+            p4.setUSER_NAME((String) reloadLabelsListBody.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
-            Object labelsObject = reloadLabelsList.get("labels");
+            Object labelsObject = reloadLabelsListBody.get("labels");
 
-            List<String> labelNames = (List<String>) labelsObject;
+            List<String> labelNames = new ArrayList<>();
+
+            if (labelsObject instanceof List<?>) {
+                for (Object item : (List<?>) labelsObject) {
+                    if (item instanceof String) {
+                        labelNames.add((String) item);
+                    }
+                }
+            } else {
+                // Handle if labelsObject is not a list
+                System.err.println("labels is not a list");
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "labels is not a list");
+                return response;
+            }
+
             ReloadOptions reloadOptions = new ReloadOptions();
 
 
             for(String labelName : labelNames){
-                boolean forceDelete = true;
                 try {
                     reloadOptions.setLabel(labelName);
                     result.add(server.reload(reloadOptions));
 
                 } catch (RequestException e) {
-                    result.add(e.getMessage());
+                    resultErr.add(e.getMessage());
                 }
             }
 
-        }catch (P4JavaException | URISyntaxException e) {
-            result.add("Error: " + e.getMessage());
-        }
+            server.disconnect();
 
-        return result;
-
-    }
-
-    public Map<String, ArrayList<String>> listAllReloadLabels(Map<String,?> listReloadLabels) {
-        Map<String, ArrayList<String>> listReloadLabelmap = new HashMap<>();
-        ArrayList<String> labelsArr = new ArrayList<>();
-        try {
-            p4.setSERVER_URI((String) listReloadLabels.get("server"));
-            p4.setUSER_NAME((String) listReloadLabels.get("user"));
-            IOptionsServer server = p4.getOptionsServer();
-
-            List<IFileSpec> fileSpecs = new ArrayList<>();
-
-
-            GetLabelsOptions options = new GetLabelsOptions();
-            options.setUserName((String) listReloadLabels.get("user"));
-            boolean unloaded = true;
-            options.setUnloaded(unloaded);
-
-            List<ILabelSummary> labels = server.getLabels(fileSpecs, options);
-
-            if (labels != null && !labels.isEmpty()) {
-                for (ILabelSummary label : labels) {
-                    labelsArr.add(label.getName());
-                }
-            } else {
-                labelsArr.add("No labels found.");
+            // Success response
+            if(resultErr.isEmpty()){
+                response.put("status", true);
+            }else {
+                response.put("status", false);
             }
+            response.put("data", result);
+            response.put("error", resultErr);
+
         }catch (P4JavaException | URISyntaxException e) {
-            labelsArr.add("Error: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
+
+            // Error response
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
         }
-        listReloadLabelmap.put("labels",labelsArr);
-        return listReloadLabelmap;
+
+
+        return response;
 
     }
+
 }

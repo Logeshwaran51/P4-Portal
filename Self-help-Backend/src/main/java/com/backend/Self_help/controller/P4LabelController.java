@@ -2,6 +2,8 @@ package com.backend.Self_help.controller;
 
 import com.backend.Self_help.service.P4LabelsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,28 +18,75 @@ public class P4LabelController {
     P4LabelsService p4Label;
 
     @PostMapping("/labels")
-    public Map<String, ArrayList<String>> listLabel(@RequestBody Map<String, ?> listLabels) {
-        return p4Label.listAllLabels(listLabels);
+    public ResponseEntity<Map<String, Object>> listLabelController(@RequestBody Map<String, ?> listLabelsBody) {
+
+        Map<String, Object> serviceResponse = p4Label.listAllLabelsService(listLabelsBody);
+
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @PostMapping("/labelsReloadList")
-    public Map<String, ArrayList<String>> listReloadLabel(@RequestBody Map<String, ?> listReloadLabels) {
-        return p4Label.listAllReloadLabels(listReloadLabels);
+    public ResponseEntity<Map<String, Object>> listReloadLabelController(@RequestBody Map<String, ?> listReloadLabelsBody) {
+        Map<String, Object> serviceResponse =  p4Label.listAllReloadLabelsService(listReloadLabelsBody);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @DeleteMapping("/labelDelete")
-    public ArrayList<String> deleteLabels(@RequestBody Map<String, ?> deleteLabelsList) {
-        return p4Label.deleteLabels(deleteLabelsList);
+    public ResponseEntity<Map<String, Object>> deleteLabelsController(@RequestBody Map<String, ?> deleteLabelsListBody) {
+        Map<String, Object> serviceResponse =  p4Label.deleteLabelsService(deleteLabelsListBody);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @PostMapping("/labelUnload")
-    public ArrayList<String> unloadLabels(@RequestBody Map<String, ?> unloadLabelsList) {
-        return p4Label.unloadLabels(unloadLabelsList);
+    public ResponseEntity<Map<String, Object>> unloadLabelsController(@RequestBody Map<String, ?> unloadLabelsListBody) {
+        Map<String, Object> serviceResponse =  p4Label.unloadLabelsService(unloadLabelsListBody);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @PostMapping("/labelReload")
-    public ArrayList<String> reloadLabels(@RequestBody Map<String, ?> reloadLabelsList) {
-        return p4Label.reloadLabels(reloadLabelsList);
+    public ResponseEntity<Map<String, Object>> reloadLabelsController(@RequestBody Map<String, ?> reloadLabelsListBody) {
+        Map<String, Object> serviceResponse =  p4Label.reloadLabelsService(reloadLabelsListBody);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
 
