@@ -6,5 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 
 public interface ServerRepo extends MongoRepository<ServerModel,String> {
+    boolean existsByServer(String server);
 }
 

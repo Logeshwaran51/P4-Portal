@@ -5,6 +5,7 @@ import com.backend.Self_help.repository.ServerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,44 +23,80 @@ public class ListServerService {
         return info.printServerInfo(server_json);
     }
 
-    public Map<String,?> getAllServers(){
-        List<ServerModel> servers = server.findAll(); // assuming server.findAll() returns List<ServerModel>
-
+    public Map<String, Object> getAllServersService() {
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Servers fetched successfully");
-        response.put("data", servers);
-        return  response;
-    }
-
-    public boolean addServer(ServerModel serverModel) {
         try {
-            server.save(serverModel);
-            return true;
+            List<ServerModel> servers = server.findAll();
+
+            response.put("status", true);
+            response.put("data", servers);
+            response.put("error", new ArrayList<>()); // Empty errors
         } catch (Exception e) {
-            System.out.println(e);
-            return false;
+            System.err.println("Error fetching servers: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", new ArrayList<>()); // Empty data
+            response.put("error", e.getMessage());
         }
+        return response;
     }
 
-    public boolean removeServer(ServerModel serverModel) {
+
+    public Map<String, Object> addServerService(ServerModel serverModel) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if(!server.existsByServer(serverModel.getServer())){
+                server.save(serverModel);
+                response.put("status", true);
+                response.put("data", "Server added successfully");
+                response.put("error", new ArrayList<>());
+            }else {
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "Server "+serverModel.getServer()+" is already exists");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error adding server: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
+
+
+    public Map<String, Object> removeServerService(ServerModel serverModel) {
+        Map<String, Object> response = new HashMap<>();
+
         try {
             List<ServerModel> serverList = server.findAll();
-
             String serverNameToDelete = serverModel.getServer();
 
+            boolean found = false;
             for (ServerModel s : serverList) {
                 if (serverNameToDelete.equals(s.getServer())) {
-                    server.delete(s);  // Use getter from Lombok
-                    return true;
+                    server.delete(s);
+                    found = true;
+                    break;
                 }
             }
 
-            System.out.println("Server not found: " + serverNameToDelete);
-            return false;
+            if (found) {
+                response.put("status", true);
+                response.put("data", "Server deleted successfully");
+                response.put("error", new ArrayList<>());
+            } else {
+                response.put("status", false);
+                response.put("data", new ArrayList<>());
+                response.put("error", "Server not found: " + serverNameToDelete);
+            }
         } catch (Exception e) {
-            System.out.println("Error deleting server: " + e.getMessage());
-            return false;
+            System.err.println("Error deleting server: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", new ArrayList<>());
+            response.put("error", e.getMessage());
         }
+        return response;
     }
+
 }

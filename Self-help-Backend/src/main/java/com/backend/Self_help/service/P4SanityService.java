@@ -39,7 +39,7 @@ public class P4SanityService {
     @Autowired
     PerforceService p4;
 
-    public Map<String, ?> p4Sanity(Map<String, ?> p4SanityData) {
+    public Map<String, Object> p4SanityService(Map<String, ?> p4SanityData) {
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
@@ -65,7 +65,7 @@ public class P4SanityService {
             clientView.addEntry(clientViewMapping);
             newClient.setClientView(clientView);
             newClient.setOwnerName((String) p4SanityData.get("user"));
-            p4SanityMap.put("clientCreationResult", server.createClient(newClient));
+            p4SanityMap.put("client", server.createClient(newClient));
 
             // P4 Listing Files
             List<IFileSpec> fileSpecs = new ArrayList<>();
@@ -74,7 +74,6 @@ public class P4SanityService {
             List<IFileSpec> allFiles = server.getDepotFiles(fileSpecs, includeAllRevs);
             List<IFileSpec> syncFile = new ArrayList<>();
             syncFile.add(allFiles.getFirst());
-            p4SanityMap.put("syncPath", syncFile.toString());
 
             // P4 Sync a file
             server.setCurrentClient(newClient);
@@ -129,11 +128,11 @@ public class P4SanityService {
 
             for (IFileSpec fileSpec : editList) {
                 if (fileSpec == null) {
-                    System.err.println("Changelist contained a null filespec");
+                    System.err.println("Changelist contained a null file spec");
                     continue;
                 }
                 if (fileSpec.getOpStatus() == FileSpecOpStatus.VALID) {
-                    p4SanityMap.put("edited: ", String.valueOf(fileSpec));
+                    p4SanityMap.put("edited", String.valueOf(fileSpec));
                 } else {
                     System.err.println(fileSpec.getStatusMessage());
                 }
@@ -148,32 +147,34 @@ public class P4SanityService {
 
             for (IFileSpec fileSpec : submitFiles) {
                 if (fileSpec == null) {
-                    System.err.println("Submitted files contained null filespec");
+                    System.err.println("Submitted files contained null file spec");
                     continue;
                 }
                 if (fileSpec.getOpStatus() == FileSpecOpStatus.VALID) {
                     System.out.println("submitted: " + fileSpec);
                 } else if (fileSpec.getOpStatus() == FileSpecOpStatus.INFO) {
-                    p4SanityMap.put("submitted changelist:" , fileSpec.getStatusMessage());
+                    p4SanityMap.put("submittedCL", fileSpec.getStatusMessage());
                 } else if (fileSpec.getOpStatus() == FileSpecOpStatus.ERROR) {
                     System.err.println(fileSpec.getStatusMessage());
                 }
             }
 
-            response.put("success", true);
-            response.put("message", "P4 Sanity process completed successfully");
+            // 👇 Updated Response
+            response.put("status", true);
             response.put("data", p4SanityMap);
+            response.put("error", new ArrayList<>());
 
         } catch (P4JavaException | URISyntaxException e) {
-            response.put("success", false);
-            response.put("message", "P4Java or URI error: " + e.getMessage());
-            response.put("data", Collections.emptyMap());
+            response.put("status", false);
+            response.put("data", new HashMap<>());
+            response.put("error", "P4Java or URI error: " + e.getMessage());
         } catch (IOException e) {
-            response.put("success", false);
-            response.put("message", "IO error: " + e.getMessage());
-            response.put("data", Collections.emptyMap());
+            response.put("status", false);
+            response.put("data", new HashMap<>());
+            response.put("error", "IO error: " + e.getMessage());
         }
 
         return response;
     }
+
 }

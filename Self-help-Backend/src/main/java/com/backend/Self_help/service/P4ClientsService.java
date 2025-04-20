@@ -139,7 +139,7 @@ public class P4ClientsService {
             }
 
             for (String clientName : clientNames) {
-                boolean forceDelete = true;
+                boolean forceDelete = false;
                 try {
                     result.add(server.deleteClient(clientName, forceDelete));
                 } catch (RequestException e) {

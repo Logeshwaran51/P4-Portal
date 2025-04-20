@@ -4,6 +4,8 @@ package com.backend.Self_help.controller;
 import com.backend.Self_help.model.ServerModel;
 import com.backend.Self_help.service.ListServerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,18 +19,45 @@ public class ListServerController {
     ListServerService server;
 
     @GetMapping("/servers")
-    public Map<String,?> getAllServers(){
-        return server.getAllServers();
+    public ResponseEntity<Map<String, Object>> getAllServersController(){
+        Map<String, Object> serviceResponse = server.getAllServersService();
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @PostMapping("/addServer")
-    public boolean addServer(@RequestBody ServerModel serverModel){
-        return server.addServer(serverModel);
+    public ResponseEntity<Map<String, Object>> addServerController(@RequestBody ServerModel serverModel){
+        Map<String, Object> serviceResponse =  server.addServerService(serverModel);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
-    @PostMapping("/removeServer")
-    public boolean removeServer(@RequestBody ServerModel serverModel){
-        return server.removeServer(serverModel);
+    @DeleteMapping("/removeServer")
+    public ResponseEntity<Map<String, Object>> removeServerController(@RequestBody ServerModel serverModel){
+        Map<String, Object> serviceResponse =  server.removeServerService(serverModel);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
+        }
     }
 
     @PostMapping("/serverInfo")

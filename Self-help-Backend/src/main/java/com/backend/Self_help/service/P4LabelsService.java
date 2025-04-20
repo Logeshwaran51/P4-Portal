@@ -146,7 +146,7 @@ public class P4LabelsService {
             }
 
             for (String labelName : labelNames) {
-                boolean forceDelete = true;
+                boolean forceDelete = false;
                 try {
                     result.add(server.deleteLabel(labelName, forceDelete));
                 } catch (RequestException e) {
