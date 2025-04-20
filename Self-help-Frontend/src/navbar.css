@@ -1,0 +1,78 @@
+/* Navbar Container */
+.navbar {
+  width: 100%;
+  background-color: #2d3748; /* Deepseek dark grey */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 5rem;
+}
+
+.navbar__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+}
+
+/* Navbar Title */
+.navbar__title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f7fafc; /* Light text for contrast */
+  letter-spacing: 0.3px;
+}
+
+/* User Section */
+.navbar__user-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Username */
+.navbar__username {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 0.875rem;
+  color: #e2e8f0; /* Lighter grey for username */
+  font-weight: 500;
+}
+
+/* Logout Button */
+.navbar__logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #4a5568; /* Medium grey for button */
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 0.875rem;
+  color: #f7fafc; /* White text */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navbar__logout-btn:hover {
+  background-color: #718096; /* Lighter grey on hover */
+  border-color: #718096;
+}
+
+/* Logout Icon */
+.navbar__logout-icon {
+  font-size: 1.1rem;
+  color: inherit;
+}
+
+/* Bottom Divider */
+.navbar__divider {
+  height: 1px;
+  width: 100%;
+  background-color: #1a202c; /* Darker grey for divider */
+}

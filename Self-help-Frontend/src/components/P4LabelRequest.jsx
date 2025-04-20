@@ -15,6 +15,8 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import "../index.css"
 import P4ServerDropDown from "./P4ServerDropDown"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const P4LabelRequest = () => {
   const [p4labels, setp4Labels] = useState("")
@@ -36,7 +38,7 @@ const P4LabelRequest = () => {
 
   const getLabels = async () => {
     try {
-      const data = {
+      const body = {
         server: selectedServer,
         user: "ulaga"
       }
@@ -44,59 +46,112 @@ const P4LabelRequest = () => {
       if (labelRequest === "Reload") {
         response = await axios.post(
           "http://localhost:8080/api/labelsReloadList",
-          data
+          body
         )
       } else {
-        response = await axios.post("http://localhost:8080/api/labels", data)
+        response = await axios.post("http://localhost:8080/api/labels", body)
       }
-
-      let { labels } = response.data
-      setlabelsDropdown([...labels])
-
-      if (!labels.includes(p4labels)) {
+      console.log(response.data)
+      let { data, status } = response.data
+      if (status) {
+        setlabelsDropdown([...data])
+      }
+      if (!data.includes(p4labels)) {
         setp4Labels("")
       }
     } catch (error) {
-      console.error("Error posting client data:", error)
+      console.log("The error is", error.response.data)
+      Swal.fire({
+        title: "Error!",
+        text: error.response.data.error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 
   let handleLabelSubmit = async () => {
     try {
-      const data = {
+      const body = {
         server: selectedServer,
         user: "ulaga",
         labels: [p4labels]
       }
       let labelSubmitResponse = ""
+      let operation = ""
       if (labelRequest === "Delete") {
+        operation = "deleted"
         labelSubmitResponse = await axios.delete(
           "http://localhost:8080/api/labelDelete",
           {
-            data: data
+            data: body
           }
         )
       } else if (labelRequest === "Unload") {
+        operation = "unloaded"
         labelSubmitResponse = await axios.post(
           "http://localhost:8080/api/labelUnload",
-          data
+          body
         )
       } else if (labelRequest === "Reload") {
+        operation = "reloaded"
         labelSubmitResponse = await axios.post(
           "http://localhost:8080/api/labelReload",
-          data
+          body
         )
       } else {
         console.log("No API")
       }
 
-      if (labelSubmitResponse.data) {
-        console.log(labelSubmitResponse.data)
+      let { data, error, status } = labelSubmitResponse.data
+      if (status) {
+        Swal.fire({
+          title: "Success!",
+          text: data,
+          icon: "success",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#0095f6",
+          confirmButtonText: "OK",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
         setp4Labels("")
       }
       setlabelRequest("")
     } catch (error) {
-      console.error("Error posting client data:", error)
+      console.error("Error posting label data:", error)
+      Swal.fire({
+        title: "Error!",
+        text: error.response.data.error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 

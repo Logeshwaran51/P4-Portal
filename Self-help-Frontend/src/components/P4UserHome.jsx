@@ -14,11 +14,13 @@ import P4LabelRequest from "./P4LabelRequest"
 import "../index.css"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
+import Navbar from "./Navbar"
 
 const P4UserHome = () => {
   const [dropDownRequestType, setDropDownRequestType] = useState("")
   const [clientBool, setClientBool] = useState(false)
   const [labelBool, setLabelBool] = useState(false)
+  const [username, setUsername] = useState("admin_user")
 
   const P4RequestType = ["Client Request", "Label Request"]
 
@@ -27,6 +29,11 @@ const P4UserHome = () => {
   })
 
   let dispatch = useDispatch()
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log("User logged out")
+  }
 
   const handleRequestTypeChange = (item) => {
     if (item.target.value === "Client Request") {
@@ -47,9 +54,8 @@ const P4UserHome = () => {
 
   return (
     <>
+      <Navbar username={username} onLogout={handleLogout} />
       <div className="p4-container">
-        <h1 className="p4-title">P4 User SH</h1>
-
         <FormGroup className="p4-form-group">
           <FormControl className="p4-form-control" sx={{ minWidth: "100%" }}>
             <InputLabel id="request-type">Select Request Type</InputLabel>

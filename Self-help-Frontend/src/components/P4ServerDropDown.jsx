@@ -1,39 +1,15 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
-import {
-  FormGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Alert
-} from "@mui/material"
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material"
 import axios from "axios"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
 import "../index.css"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const P4ServerDropDown = () => {
   const [dropDownServer, setDropDownServer] = useState([])
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
-
-  // Function to fetch the servers
-  const getServers = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/servers")
-      const { data, success, message } = response.data
-      if (success) {
-        setDropDownServer([...data])
-        setMessage(message)
-      } else {
-        setError(message)
-      }
-    } catch (error) {
-      setError("Failed to fetch servers")
-    }
-  }
 
   let dispatch = useDispatch()
   const handleServerChange = (item) => {
@@ -43,6 +19,51 @@ const P4ServerDropDown = () => {
   let selectedServer = useSelector((state) => {
     return state.p4server
   })
+  // Function to fetch the servers
+  const getServers = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/servers")
+      let { data, status } = response.data
+      if (status) {
+        if (data.length === 0) {
+          Swal.fire({
+            title: "Error!",
+            text: "No Servers in DB",
+            icon: "error",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#d32f2f",
+            confirmButtonText: "Try Again",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
+        }
+        setDropDownServer([...data])
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error.response.data.error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
+    }
+  }
 
   useEffect(() => {
     getServers()
@@ -63,15 +84,23 @@ const P4ServerDropDown = () => {
           labelId="server-select-label"
           id="server-select"
           label="Select Server"
-          value={selectedServer}
+          value={
+            dropDownServer.some((server) => server.server === selectedServer)
+              ? selectedServer
+              : ""
+          }
           onChange={handleServerChange}
           className="p4-select"
         >
-          {dropDownServer.map((server) => (
-            <MenuItem key={server._id} value={server.server}>
-              {server.server}
-            </MenuItem>
-          ))}
+          {dropDownServer.length === 0 ? (
+            <MenuItem disabled>Loading servers...</MenuItem>
+          ) : (
+            dropDownServer.map((server) => (
+              <MenuItem key={server._id} value={server.server}>
+                {server.server}
+              </MenuItem>
+            ))
+          )}
         </Select>
       </FormControl>
     </>

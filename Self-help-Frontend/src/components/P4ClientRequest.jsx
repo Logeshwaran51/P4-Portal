@@ -14,9 +14,9 @@ import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import axios from "axios"
 import "../index.css"
-import "../swal-custom.css"
 import P4ServerDropDown from "./P4ServerDropDown"
 import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const P4ClientRequest = () => {
   const [p4clients, setp4Clients] = useState("")
@@ -52,36 +52,18 @@ const P4ClientRequest = () => {
         response = await axios.post("http://localhost:8080/api/clients", body)
       }
 
-      let { data, error, status } = response.data
+      let { data, status } = response.data
       console.log(response.data)
       if (status) {
         setclientsDropdown([...data])
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: error,
-          icon: "error",
-          background: "#ffffff",
-          color: "#262626",
-          confirmButtonColor: "#d32f2f",
-          confirmButtonText: "Try Again",
-          customClass: {
-            container: "swal-container",
-            popup: "swal-popup",
-            title: "swal-title",
-            content: "swal-text",
-            confirmButton: "swal-confirm"
-          }
-        })
       }
-
       if (!data.includes(p4clients)) {
         setp4Clients("")
       }
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: error,
+        text: error.response.data.error,
         icon: "error",
         background: "#ffffff",
         color: "#262626",
@@ -132,7 +114,7 @@ const P4ClientRequest = () => {
         return
       }
 
-      let { data, error, status } = clientSubmitResponse.data
+      let { data, status } = clientSubmitResponse.data
       if (status) {
         Swal.fire({
           title: "Success!",
@@ -150,34 +132,14 @@ const P4ClientRequest = () => {
             confirmButton: "swal-confirm"
           }
         })
-        console.log(clientSubmitResponse.data)
         setp4Clients("")
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: error,
-          icon: "error",
-          background: "#ffffff",
-          color: "#262626",
-          confirmButtonColor: "#d32f2f",
-          confirmButtonText: "Try Again",
-          customClass: {
-            container: "swal-container",
-            popup: "swal-popup",
-            title: "swal-title",
-            content: "swal-text",
-            confirmButton: "swal-confirm"
-          }
-        })
       }
       setclientRequest("")
     } catch (error) {
       console.error("Error posting client data:", error)
       Swal.fire({
         title: "Error!",
-        text: `Failed to ${clientRequest.toLowerCase()} client: ${
-          error.message
-        }`,
+        text: error.response.data.error,
         icon: "error",
         background: "#ffffff",
         color: "#262626",

@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux"
 import P4ServerDropDown from "./P4ServerDropDown"
 import { setServerReducer } from "../store/p4serverSlice"
 import "../index.css"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 function P4Sanity() {
   const [inputP4PathField, setInputP4PathField] = useState("")
@@ -28,17 +30,53 @@ function P4Sanity() {
         p4Path: inputP4PathField
       }
       let response = await axios.post("http://localhost:8080/api/sanity", body)
-      const { data, success, message } = response.data
-      if (success) {
-        console.log(data)
-        console.log(message)
+      const { data, status } = response.data
+      if (status) {
+        let { submittedCL, syncResult, edited, client } = data
+
+        let successMessage = `
+        <b>Submitted CL:</b> ${submittedCL}<br/>
+        <b>Sync Result:</b> ${syncResult}<br/>
+        <b>Edited:</b> ${edited}<br/>
+        <b>Client:</b> ${client}
+      `
+
+        Swal.fire({
+          title: "Success!",
+          html: successMessage,
+          icon: "success",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#0095f6",
+          confirmButtonText: "OK",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
         dispatch(setServerReducer(""))
         setInputP4PathField("")
-      } else {
-        console.log(message)
       }
     } catch (error) {
-      console.log(error)
+      Swal.fire({
+        title: "Error!",
+        text: error.response.data.error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 

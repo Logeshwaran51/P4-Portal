@@ -4,11 +4,11 @@ import { FormControl, InputLabel, Select, MenuItem, Alert } from "@mui/material"
 import axios from "axios"
 import { useSelector } from "react-redux"
 import "../index.css"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 function P4DepotDropDown({ selectDepot, setSelectDepot }) {
   const [dropDownDepot, setDropDownDepot] = useState([])
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
 
   let selectedServer = useSelector((state) => {
     return state.p4server
@@ -25,17 +25,28 @@ function P4DepotDropDown({ selectDepot, setSelectDepot }) {
         "http://localhost:8080/api/listDepots",
         body
       )
-      const { data, success, message } = response.data
+      const { data, status } = response.data
       console.log(response.data)
-      if (success) {
+      if (status) {
         setDropDownDepot([...data])
-        setMessage(message)
-      } else {
-        console.log(message)
-        setError(message)
       }
     } catch (error) {
-      setError("Failed to fetch Depots")
+      Swal.fire({
+        title: "Error!",
+        text: error.response.data.error,
+        icon: "error",
+        background: "#ffffff",
+        color: "#262626",
+        confirmButtonColor: "#d32f2f",
+        confirmButtonText: "Try Again",
+        customClass: {
+          container: "swal-container",
+          popup: "swal-popup",
+          title: "swal-title",
+          content: "swal-text",
+          confirmButton: "swal-confirm"
+        }
+      })
     }
   }
 

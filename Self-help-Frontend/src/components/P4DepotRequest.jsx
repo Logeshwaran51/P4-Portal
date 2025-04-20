@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   FormControl,
   Button,
@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux"
 import P4ServerDropDown from "./P4ServerDropDown"
 import { setServerReducer } from "../store/p4serverSlice"
 import "../index.css"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const P4DepotRequest = () => {
   const [depotRequest, setDepotRequest] = useState("")
@@ -62,17 +64,45 @@ const P4DepotRequest = () => {
           body
         )
 
-        const { data, success, message } = serverCreationResponse.data
-        if (success) {
-          console.log(data)
+        const { data, status } = serverCreationResponse.data
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
           setDepotRequest("")
           setDepotInputField("")
           dispatch(setServerReducer(""))
-        } else {
-          console.log(message)
         }
       } catch (error) {
-        console.log(error)
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
     } else if (depotRequest === "Remove") {
       try {
@@ -86,23 +116,52 @@ const P4DepotRequest = () => {
           "http://localhost:8080/api/deleteDepots",
           { data: body }
         )
-        const { data, success, message } = serverDeletionResponse.data
+        const { data, status } = serverDeletionResponse.data
 
-        if (success) {
-          console.log(data)
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
           setDepotRequest("")
           setSelectDepot("")
           dispatch(setServerReducer(""))
-        } else {
-          console.log(message)
         }
       } catch (error) {
-        console.log(error)
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
     } else {
       console.log("No Request")
     }
   }
+
   return (
     <Box
       component="form"

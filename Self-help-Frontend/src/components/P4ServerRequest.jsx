@@ -15,6 +15,8 @@ import P4ServerDropDown from "./P4ServerDropDown"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
 import "../index.css"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const P4ServerRequest = () => {
   const [serverRequest, setServerRequest] = useState("")
@@ -49,44 +51,104 @@ const P4ServerRequest = () => {
 
   const handleClientSubmit = async () => {
     if (serverRequest === "ADD") {
-      const data = {
+      const body = {
         server: inputField
       }
       try {
         const addServer = await axios.post(
           "http://localhost:8080/api/addServer",
-          data
+          body
         )
-        const responseAddServer = addServer.data
-        if (responseAddServer) {
-          console.log(responseAddServer)
+        let { data, status } = addServer.data
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
           setInputField("")
           setServerRequest("")
-        } else {
-          console.log("Not added!!")
         }
       } catch (error) {
-        console.log(error)
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
+      setInputField("")
     } else if (serverRequest === "REMOVE") {
-      const data = {
+      const body = {
         server: selectedServer
       }
       try {
-        const removeServer = await axios.post(
+        const removeServer = await axios.delete(
           "http://localhost:8080/api/removeServer",
-          data
+          {
+            data: body
+          }
         )
-        const responseRemoveServer = removeServer.data
-        if (responseRemoveServer) {
-          console.log(responseRemoveServer)
+        let { data, status } = removeServer.data
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
           dispatch(setServerReducer(""))
           setServerRequest("")
-        } else {
-          console.log("Not deleted!!")
         }
       } catch (error) {
-        console.log(error)
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
+        dispatch(setServerReducer(""))
       }
     }
   }

@@ -14,6 +14,7 @@ import P4Sanity from "./P4Sanity"
 import "../index.css"
 import { useDispatch, useSelector } from "react-redux"
 import { setServerReducer } from "../store/p4serverSlice"
+import Navbar from "./Navbar"
 
 const P4AdminHome = () => {
   const P4RequestType = ["Server Request", "Depot Request", "Sanity Request"]
@@ -21,6 +22,7 @@ const P4AdminHome = () => {
   const [serverRequestBool, setServerRequestBool] = useState(false)
   const [depotRequestBool, setDepotRequestBool] = useState(false)
   const [sanityBool, setSanityBool] = useState(false)
+  const [username, setUsername] = useState("p4_user")
 
   let selectedServer = useSelector((state) => {
     return state.p4server
@@ -56,11 +58,12 @@ const P4AdminHome = () => {
     }
   }
 
+  const handleLogout = () => {}
+
   return (
     <>
+      <Navbar username={username} onLogout={handleLogout} />
       <div className="p4-container">
-        <h1 className="p4-title">P4 Admin SH</h1>
-
         <FormGroup className="p4-form-group">
           <FormControl className="p4-form-control" fullWidth>
             <InputLabel id="request-type">Select Request Type</InputLabel>
