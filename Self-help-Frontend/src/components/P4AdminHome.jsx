@@ -22,7 +22,6 @@ const P4AdminHome = () => {
   const [serverRequestBool, setServerRequestBool] = useState(false)
   const [depotRequestBool, setDepotRequestBool] = useState(false)
   const [sanityBool, setSanityBool] = useState(false)
-  const [username, setUsername] = useState("p4_user")
 
   let selectedServer = useSelector((state) => {
     return state.p4server
@@ -58,11 +57,9 @@ const P4AdminHome = () => {
     }
   }
 
-  const handleLogout = () => {}
-
   return (
     <>
-      <Navbar username={username} onLogout={handleLogout} />
+      <Navbar />
       <div className="p4-container">
         <FormGroup className="p4-form-group">
           <FormControl className="p4-form-control" fullWidth>

@@ -8,15 +8,23 @@ import {
 import "../home.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useDispatch, useSelector } from "react-redux"
+import { setUserReducer } from "../store/userSlice"
+import Swal from "sweetalert2"
+import "../swal-custom.css"
 
 const Home = () => {
   const [loginType, setLoginType] = useState("admin")
   const [isRegistering, setIsRegistering] = useState(false)
   const [credentials, setCredentials] = useState({
-    username: "",
     password: "",
     confirmPassword: ""
   })
+
+  let userName = useSelector((state) => {
+    return state.userName
+  })
+  const dispatch = useDispatch()
 
   const handleTypeChange = (event, newType) => {
     if (newType !== null) {
@@ -28,85 +36,190 @@ const Home = () => {
   let navigate = useNavigate()
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setCredentials((prev) => ({ ...prev, [name]: value }))
+    if (name === "username") {
+      dispatch(setUserReducer(value))
+    } else {
+      setCredentials((prev) => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (loginType === "user" && isRegistering) {
       if (credentials.password !== credentials.confirmPassword) {
-        alert("Passwords don't match!")
+        Swal.fire({
+          title: "Error!",
+          text: "Password Mismatch!!",
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
         return
       } else {
         try {
           const body = {
-            userName: credentials.username,
+            userName: userName,
             userPassword: credentials.password
           }
           let userRegisterResponse = await axios.post(
             "http://localhost:8080/api/userRegister",
             body
           )
-          console.log(userRegisterResponse.data)
-          if (userRegisterResponse.data === true) {
-            alert("Registered Successful!")
-            setIsRegistering(false)
-          } else {
-            alert("Already Registered!")
+          let { data, status } = userRegisterResponse.data
+          if (status) {
+            Swal.fire({
+              title: "Success!",
+              text: data,
+              icon: "success",
+              background: "#ffffff",
+              color: "#262626",
+              confirmButtonColor: "#0095f6",
+              confirmButtonText: "OK",
+              customClass: {
+                container: "swal-container",
+                popup: "swal-popup",
+                title: "swal-title",
+                content: "swal-text",
+                confirmButton: "swal-confirm"
+              }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setIsRegistering(false)
+              }
+            })
           }
         } catch (error) {
-          if (error.response && error.response.status === 401) {
-            console.log(error.response.data)
-          } else {
-            alert("Server Error!")
-          }
+          Swal.fire({
+            title: "Error!",
+            text: error.response.data.error,
+            icon: "error",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#d32f2f",
+            confirmButtonText: "Try Again",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          })
         }
       }
     } else if (loginType === "admin") {
       try {
         const body = {
-          userName: credentials.username,
+          userName: userName,
           userPassword: credentials.password
         }
+        console.log(body)
         let adminLoginResponse = await axios.post(
           "http://localhost:8080/api/adminLogin",
           body
         )
-        if (adminLoginResponse.data === true) {
-          alert("Login Successful!")
-          navigate("/p4admin")
-        } else {
-          alert("Login Failed!")
+        console.log(adminLoginResponse.data)
+        let { data, status } = adminLoginResponse.data
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate("/p4admin")
+            }
+          })
         }
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          alert("Invalid username or password!")
-        } else {
-          alert("Server Error!")
-        }
+        console.log(error.response.data)
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
     } else {
       try {
         const body = {
-          userName: credentials.username,
+          userName: userName,
           userPassword: credentials.password
         }
         let userLoginResponse = await axios.post(
           "http://localhost:8080/api/userLogin",
           body
         )
-        if (userLoginResponse.data === true) {
-          alert("Login Successful!")
-          navigate("/p4user")
-        } else {
-          alert("Login Failed!")
+        let { data, status } = userLoginResponse.data
+        if (status) {
+          Swal.fire({
+            title: "Success!",
+            text: data,
+            icon: "success",
+            background: "#ffffff",
+            color: "#262626",
+            confirmButtonColor: "#0095f6",
+            confirmButtonText: "OK",
+            customClass: {
+              container: "swal-container",
+              popup: "swal-popup",
+              title: "swal-title",
+              content: "swal-text",
+              confirmButton: "swal-confirm"
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate("/p4user")
+            }
+          })
         }
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          alert("Invalid username or password!")
-        } else {
-          alert("Server Error!")
-        }
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data.error,
+          icon: "error",
+          background: "#ffffff",
+          color: "#262626",
+          confirmButtonColor: "#d32f2f",
+          confirmButtonText: "Try Again",
+          customClass: {
+            container: "swal-container",
+            popup: "swal-popup",
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm"
+          }
+        })
       }
     }
   }
@@ -152,7 +265,7 @@ const Home = () => {
           label={`${loginType === "admin" ? "Admin" : "User"} Username`}
           variant="outlined"
           name="username"
-          value={credentials.username}
+          value={userName}
           onChange={handleInputChange}
           fullWidth
           required

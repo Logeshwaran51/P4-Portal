@@ -1,0 +1,85 @@
+/* Main container */
+.p4-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Form container */
+.p4-form-container {
+  background-color: #ffffff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Title */
+.p4-title {
+  color: #262626;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Text fields */
+.p4-text-field .MuiOutlinedInput-root {
+  background-color: rgba(250, 250, 250, 1);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.p4-text-field .MuiOutlinedInput-notchedOutline {
+  border-color: #dbdbdb;
+}
+
+.p4-text-field .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #a8a8a8;
+}
+
+.p4-text-field .MuiInputLabel-outlined {
+  color: #8e8e8e;
+}
+
+/* Button */
+.p4-submit-button {
+  background-color: #0095f6 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  margin-top: 1rem !important;
+  box-shadow: none !important;
+}
+
+.p4-submit-button:hover {
+  background-color: #0077cc !important;
+}
+
+.p4-submit-button:disabled {
+  background-color: rgba(0, 149, 246, 0.3) !important;
+}
+
+/* Progress bar */
+.p4-progress {
+  margin-bottom: 1rem !important;
+}
+
+/* Alerts */
+.p4-alert {
+  border-radius: 8px !important;
+  margin-bottom: 1rem !important;
+}
+
+.p4-alert-error {
+  background-color: #feeaea !important;
+  color: #d32f2f !important;
+  border: 1px solid #f5c2c7 !important;
+}
+
+.p4-alert-success {
+  background-color: #edf7ed !important;
+  color: #2e7d32 !important;
+  border: 1px solid #badbcc !important;
+}
