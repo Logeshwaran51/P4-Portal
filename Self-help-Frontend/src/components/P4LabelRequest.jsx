@@ -32,6 +32,10 @@ const P4LabelRequest = () => {
     return state.p4server
   })
 
+  let userName = useSelector((state) => {
+    return state.userName
+  })
+
   const handleLabelSelection = (item) => {
     setp4Labels(item.target.value)
   }
@@ -40,7 +44,7 @@ const P4LabelRequest = () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga"
+        user: userName
       }
       let response = ""
       if (labelRequest === "Reload") {
@@ -84,7 +88,7 @@ const P4LabelRequest = () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga",
+        user: userName,
         labels: [p4labels]
       }
       let labelSubmitResponse = ""

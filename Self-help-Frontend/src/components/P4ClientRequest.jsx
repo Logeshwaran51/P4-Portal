@@ -35,12 +35,15 @@ const P4ClientRequest = () => {
   const handleClientSelection = (item) => {
     setp4Clients(item.target.value)
   }
+  let userName = useSelector((state) => {
+    return state.userName
+  })
 
   const getClients = async () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga"
+        user: userName
       }
       let response = ""
       if (clientRequest === "Reload") {
@@ -84,7 +87,7 @@ const P4ClientRequest = () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga",
+        user: userName,
         clients: [p4clients]
       }
 

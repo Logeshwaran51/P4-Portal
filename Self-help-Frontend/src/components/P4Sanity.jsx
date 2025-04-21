@@ -20,13 +20,17 @@ function P4Sanity() {
     return state.p4server
   })
 
+  let userName = useSelector((state) => {
+    return state.userName
+  })
+
   let dispatch = useDispatch()
 
   const handleClientSubmit = async () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga",
+        user: userName,
         p4Path: inputP4PathField
       }
       let response = await axios.post("http://localhost:8080/api/sanity", body)

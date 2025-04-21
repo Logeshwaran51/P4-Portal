@@ -47,6 +47,10 @@ const P4DepotRequest = () => {
     return state.p4server
   })
 
+  let userName = useSelector((state) => {
+    return state.userName
+  })
+
   let dispatch = useDispatch()
 
   const handleClientSubmit = async () => {
@@ -54,7 +58,7 @@ const P4DepotRequest = () => {
       try {
         const body = {
           server: selectedServer,
-          user: "ulaga",
+          user: userName,
           depotName: inputDepotField,
           depotMap: inputDepotField + "/..."
         }
@@ -108,7 +112,7 @@ const P4DepotRequest = () => {
       try {
         const body = {
           server: selectedServer,
-          user: "ulaga",
+          user: userName,
           depotName: [selectDepot]
         }
 

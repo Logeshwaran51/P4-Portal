@@ -13,13 +13,16 @@ function P4DepotDropDown({ selectDepot, setSelectDepot }) {
   let selectedServer = useSelector((state) => {
     return state.p4server
   })
+  let userName = useSelector((state) => {
+    return state.userName
+  })
 
   // Function to fetch the servers
   const getDepots = async () => {
     try {
       const body = {
         server: selectedServer,
-        user: "ulaga"
+        user: userName
       }
       const response = await axios.post(
         "http://localhost:8080/api/listDepots",
