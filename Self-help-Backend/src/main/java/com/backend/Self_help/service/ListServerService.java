@@ -47,7 +47,7 @@ public class ListServerService {
             if(!server.existsByServer(serverModel.getServer())){
                 server.save(serverModel);
                 response.put("status", true);
-                response.put("data", "Server added successfully");
+                response.put("data", "Server " +serverModel.getServer()+ " added successfully");
                 response.put("error", new ArrayList<>());
             }else {
                 response.put("status", false);
@@ -83,7 +83,7 @@ public class ListServerService {
 
             if (found) {
                 response.put("status", true);
-                response.put("data", "Server deleted successfully");
+                response.put("data", "Server " +serverModel.getServer()+" deleted successfully");
                 response.put("error", new ArrayList<>());
             } else {
                 response.put("status", false);

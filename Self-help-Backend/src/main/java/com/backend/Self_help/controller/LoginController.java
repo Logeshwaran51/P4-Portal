@@ -23,38 +23,50 @@ public class LoginController {
     LoginService login;
 
     @RequestMapping("/adminLogin")
-    public ResponseEntity<Boolean> adminLoginController(@RequestBody AdminLoginModel adminBody){
+    public ResponseEntity<Map<String,Object>> adminLoginController(@RequestBody AdminLoginModel adminBody){
 
-        boolean isAuthenticated = login.adminLoginService(adminBody);
+        Map<String, Object> serviceResponse = login.adminLoginService(adminBody);
 
-        if (isAuthenticated) {
-            return ResponseEntity.ok(true);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
         }
     }
 
     @RequestMapping("/userLogin")
-    public ResponseEntity<Boolean> userLoginController(@RequestBody UserLoginModel userBody){
+    public ResponseEntity<Map<String,Object>> userLoginController(@RequestBody UserLoginModel userBody){
 
-        boolean isAuthenticated = login.userLoginService(userBody);
+        Map<String, Object> serviceResponse = login.userLoginService(userBody);
 
-        if (isAuthenticated) {
-            return ResponseEntity.ok(true);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
         }
     }
 
     @RequestMapping("/userRegister")
-    public ResponseEntity<Boolean> userRegisterController(@RequestBody UserLoginModel userRegisterBody){
+    public ResponseEntity<Map<String,Object>> userRegisterController(@RequestBody UserLoginModel userRegisterBody){
 
-        boolean isAuthenticated = login.userRegisterService(userRegisterBody);
+        Map<String, Object> serviceResponse = login.userRegisterService(userRegisterBody);
 
-        if (isAuthenticated) {
-            return ResponseEntity.ok(true);
+        boolean status = (boolean) serviceResponse.get("status");
+
+        if (status) {
+            // Status true => OK 200
+            return ResponseEntity.ok(serviceResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+            // Status false => BAD_REQUEST 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(serviceResponse);
         }
     }
 }

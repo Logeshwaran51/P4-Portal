@@ -8,6 +8,10 @@ import com.backend.Self_help.repository.UserLoginRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Service
 public class LoginService {
@@ -18,39 +22,73 @@ public class LoginService {
     @Autowired
     UserLoginRepo userLoginRepo;
 
-    public boolean adminLoginService(AdminLoginModel adminBody) {
+    public Map<String, Object> adminLoginService(AdminLoginModel adminBody) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String loginUserName = adminBody.getUserName();
+            String loginUserPassword = adminBody.getUserPassword();
 
+            response.put("status", adminLoginRepo.existsByUserNameAndUserPassword(loginUserName, loginUserPassword));
+            response.put("data", "Logged in Successfully!");
+            response.put("error", null);
 
-        String loginUserName = adminBody.getUserName();
-        String loginUserPassword = adminBody.getUserPassword();
-
-        return adminLoginRepo.existsByUserNameAndUserPassword(loginUserName,loginUserPassword);
-
-    }
-
-    public boolean userLoginService(UserLoginModel userBody) {
-        String loginUserName = userBody.getUserName();
-        String loginUserPassword = userBody.getUserPassword();
-
-        return userLoginRepo.existsByUserNameAndUserPassword(loginUserName,loginUserPassword);
-    }
-
-    public boolean userRegisterService(UserLoginModel userRegisterBody) {
-        String registerUserName = userRegisterBody.getUserName();
-        String registerUserPassword = userRegisterBody.getUserPassword();
-
-        if(userLoginRepo.existsByUserNameAndUserPassword(registerUserName,registerUserPassword)){
-            return false;
-        }else{
-           try {
-               userLoginRepo.save(userRegisterBody);
-               return true;
-           } catch (Exception e) {
-               System.out.println(e);
-               return false;
-           }
-
+        } catch (Exception e) {
+            System.err.println("Error during admin login: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", Collections.emptyMap());
+            response.put("error", e.getMessage());
         }
 
+        return response;
     }
+
+
+    public Map<String, Object> userLoginService(UserLoginModel userBody) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String loginUserName = userBody.getUserName();
+            String loginUserPassword = userBody.getUserPassword();
+
+            boolean exists = userLoginRepo.existsByUserNameAndUserPassword(loginUserName, loginUserPassword);
+
+            response.put("status", exists);
+            response.put("data", "Logged in Successfully!");
+            response.put("error", null);
+
+        } catch (Exception e) {
+            System.err.println("Error during user login: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", Collections.emptyMap());
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
+
+
+    public Map<String, Object> userRegisterService(UserLoginModel userRegisterBody) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String registerUserName = userRegisterBody.getUserName();
+            String registerUserPassword = userRegisterBody.getUserPassword();
+
+            if (userLoginRepo.existsByUserNameAndUserPassword(registerUserName, registerUserPassword)) {
+                response.put("status", false);
+                response.put("data", Collections.emptyMap());
+                response.put("error", "User already exists with provided credentials");
+            } else {
+                userLoginRepo.save(userRegisterBody);
+                response.put("status", true);
+                response.put("data", "Registered Successfully!");
+                response.put("error", null);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error during user registration: " + e.getMessage());
+            response.put("status", false);
+            response.put("data", Collections.emptyMap());
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
+
 }
