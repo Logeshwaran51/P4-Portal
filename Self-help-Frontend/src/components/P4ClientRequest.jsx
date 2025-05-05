@@ -175,9 +175,10 @@ const P4ClientRequest = () => {
 
   useEffect(() => {
     if (selectedServer) {
+      setclientsDropdown([])
       getClients()
     }
-  }, [clientRequest])
+  }, [clientRequest, selectedServer])
 
   return (
     <Box

@@ -174,9 +174,10 @@ const P4LabelRequest = () => {
 
   useEffect(() => {
     if (selectedServer) {
+      setlabelsDropdown()
       getLabels()
     }
-  }, [labelRequest])
+  }, [labelRequest, selectedServer])
 
   return (
     <Box
