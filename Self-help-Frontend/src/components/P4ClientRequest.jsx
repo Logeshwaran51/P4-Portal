@@ -2,13 +2,15 @@ import {
   Box,
   FormControl,
   InputLabel,
-  Select,
+  Menu,
   MenuItem,
   Button,
   FormLabel,
   RadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
+  Chip,
+  IconButton
 } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
@@ -17,27 +19,41 @@ import "../index.css"
 import P4ServerDropDown from "./P4ServerDropDown"
 import Swal from "sweetalert2"
 import "../swal-custom.css"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
+import CancelIcon from "@mui/icons-material/Cancel"
 
 const P4ClientRequest = () => {
-  const [p4clients, setp4Clients] = useState("")
+  const [p4clients, setp4Clients] = useState([])
   const [clientsDropdown, setclientsDropdown] = useState([])
+  const [anchorEl, setAnchorEl] = useState(null)
   const ClientRequestType = ["Delete", "Reload", "Unload"]
   const [clientRequest, setclientRequest] = useState("")
 
-  let handleSetClientRequest = (item) => {
+  const selectedServer = useSelector((state) => state.p4server)
+  const userName = useSelector((state) => state.userName)
+
+  const handleSetClientRequest = (item) => {
     setclientRequest(item.target.value)
   }
 
-  let selectedServer = useSelector((state) => {
-    return state.p4server
-  })
-
-  const handleClientSelection = (item) => {
-    setp4Clients(item.target.value)
+  const handleOpenDropdown = (event) => {
+    setAnchorEl(event.currentTarget)
   }
-  let userName = useSelector((state) => {
-    return state.userName
-  })
+
+  const handleCloseDropdown = () => {
+    setAnchorEl(null)
+  }
+
+  const handleClientSelect = (client) => {
+    setp4Clients((prev) => [...prev, client])
+    setclientsDropdown((prev) => prev.filter((item) => item !== client))
+    handleCloseDropdown()
+  }
+
+  const handleRemoveClient = (client) => {
+    setp4Clients((prev) => prev.filter((item) => item !== client))
+    setclientsDropdown((prev) => [...prev, client])
+  }
 
   const getClients = async () => {
     try {
@@ -45,6 +61,7 @@ const P4ClientRequest = () => {
         server: selectedServer,
         user: userName
       }
+
       let response = ""
       if (clientRequest === "Reload") {
         response = await axios.post(
@@ -55,18 +72,15 @@ const P4ClientRequest = () => {
         response = await axios.post("http://localhost:8080/api/clients", body)
       }
 
-      let { data, status } = response.data
-      console.log(response.data)
+      const { data, status } = response.data
       if (status) {
-        setclientsDropdown([...data])
-      }
-      if (!data.includes(p4clients)) {
-        setp4Clients("")
+        setclientsDropdown(data)
+        setp4Clients([])
       }
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: error.response.data.error,
+        text: error.response?.data?.error || "Failed to fetch clients",
         icon: "error",
         background: "#ffffff",
         color: "#262626",
@@ -83,12 +97,12 @@ const P4ClientRequest = () => {
     }
   }
 
-  let handleClientSubmit = async () => {
+  const handleClientSubmit = async () => {
     try {
       const body = {
         server: selectedServer,
         user: userName,
-        clients: [p4clients]
+        clients: p4clients
       }
 
       let clientSubmitResponse = ""
@@ -113,11 +127,11 @@ const P4ClientRequest = () => {
           body
         )
       } else {
-        console.log("No API")
+        console.log("No API called.")
         return
       }
 
-      let { data, status } = clientSubmitResponse.data
+      const { data, status } = clientSubmitResponse.data
       if (status) {
         Swal.fire({
           title: "Success!",
@@ -135,14 +149,14 @@ const P4ClientRequest = () => {
             confirmButton: "swal-confirm"
           }
         })
-        setp4Clients("")
+        setp4Clients([])
       }
       setclientRequest("")
     } catch (error) {
       console.error("Error posting client data:", error)
       Swal.fire({
         title: "Error!",
-        text: error.response.data.error,
+        text: error.response?.data?.error || "Submission failed",
         icon: "error",
         background: "#ffffff",
         color: "#262626",
@@ -166,83 +180,96 @@ const P4ClientRequest = () => {
   }, [clientRequest])
 
   return (
-    <>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleClientSubmit()
-        }}
-        className="p4-form-container"
-        sx={{ width: "100%", marginTop: "10px" }}
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleClientSubmit()
+      }}
+      className="p4-form-container"
+      sx={{ width: "100%", marginTop: "10px" }}
+    >
+      <P4ServerDropDown className="p4-subcomponent" />
+
+      {selectedServer && (
+        <FormControl
+          className="p4-form-control"
+          fullWidth
+          sx={{ marginBottom: "20px", marginTop: "20px" }}
+        >
+          <FormLabel className="p4-form-label" id="clients-radio-group-label">
+            Client Request
+          </FormLabel>
+          <RadioGroup
+            className="p4-radio-group"
+            aria-labelledby="clients-radio-group-label"
+            name="clients-radio-group"
+            value={clientRequest}
+            onChange={handleSetClientRequest}
+          >
+            {ClientRequestType.map((item, index) => (
+              <FormControlLabel
+                key={index}
+                className="p4-radio-option"
+                value={item}
+                control={<Radio className="p4-radio-button" />}
+                label={item}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      )}
+
+      {/* Custom Client Selector */}
+      <FormControl
+        className="p4-form-control"
+        fullWidth
+        sx={{ marginBottom: "20px" }}
       >
-        <P4ServerDropDown className="p4-subcomponent" />
-        {/* Radio Group for client request */}
-
-        {selectedServer && (
-          <FormControl
-            className="p4-form-control"
-            fullWidth
-            sx={{ marginBottom: "20px", marginTop: "20px" }}
-          >
-            <FormLabel className="p4-form-label" id="clients-radio-group-label">
-              Client Request
-            </FormLabel>
-            <RadioGroup
-              className="p4-radio-group"
-              aria-labelledby="clients-radio-group-label"
-              name="clients-radio-group"
-              value={clientRequest}
-              onChange={handleSetClientRequest}
-            >
-              {ClientRequestType.map((item, index) => (
-                <FormControlLabel
-                  key={index}
-                  className="p4-radio-option"
-                  value={item}
-                  control={<Radio className="p4-radio-button" />}
-                  label={item}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        )}
-        {/* Select dropdown for clients */}
-        {clientsDropdown.length !== 0 && (
-          <FormControl
-            className="p4-form-control"
-            fullWidth
-            variant="outlined"
-            sx={{ marginBottom: "20px" }}
-          >
-            <InputLabel className="p4-input-label" id="p4clients-label">
-              Select Clients
-            </InputLabel>
-            <Select
-              className="p4-select"
-              labelId="p4clients-label"
-              id="p4clients-select"
-              value={p4clients}
-              onChange={handleClientSelection}
-              label="Select Clients"
-            >
-              {clientsDropdown.map((item, index) => (
-                <MenuItem className="p4-menu-item" key={index} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-
-        {/* Submit button */}
-        <Button className="p4-submit-button" variant="contained" type="submit">
-          Submit
+        <FormLabel className="p4-form-label">Select Clients</FormLabel>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowDropDownIcon />}
+          onClick={handleOpenDropdown}
+          sx={{ textTransform: "none", marginBottom: "10px" }}
+        >
+          {clientsDropdown.length === 0
+            ? "No Clients Available"
+            : "Choose from list"}
         </Button>
-      </Box>
-    </>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseDropdown}
+        >
+          {clientsDropdown.map((client, index) => (
+            <MenuItem key={index} onClick={() => handleClientSelect(client)}>
+              {client}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selected clients as removable chips */}
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, marginTop: 1 }}>
+          {p4clients.map((client, index) => (
+            <Chip
+              key={index}
+              label={client}
+              onDelete={() => handleRemoveClient(client)}
+              deleteIcon={<CancelIcon />}
+              variant="outlined"
+              sx={{ fontSize: "14px" }}
+            />
+          ))}
+        </Box>
+      </FormControl>
+
+      <Button className="p4-submit-button" variant="contained" type="submit">
+        Submit
+      </Button>
+    </Box>
   )
 }
 
