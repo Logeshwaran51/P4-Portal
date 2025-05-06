@@ -28,22 +28,16 @@ public class P4ClientsService {
             p4.setUSER_NAME((String) listClientsBody.get("user"));
             IOptionsServer server = p4.getOptionsServer();
 
-            List<IClientSummary> clientList = server.getClients(new GetClientsOptions().setUserName((String) listClientsBody.get("user")));
+            List<IClientSummary> clientList = server.getClients(
+                    new GetClientsOptions().setUserName((String) listClientsBody.get("user"))
+            );
 
-            if (clientList == null) {
-                System.err.println("Client list is null");
-                response.put("status", false);
-                response.put("data", new ArrayList<>());
-                response.put("error", "Client list is null");
-                return response;
-            }
-
-            for (IClientSummary clientSummary : clientList) {
-                if (clientSummary == null) {
-                    System.err.println("Null Client in clients list");
-                    continue;
+            if (clientList != null && !clientList.isEmpty()) {
+                for (IClientSummary clientSummary : clientList) {
+                    clientsArr.add(clientSummary.getName());
                 }
-                clientsArr.add(clientSummary.getName());
+            } else {
+                clientsArr.add("No clients found.");
             }
 
             server.disconnect();
@@ -55,6 +49,7 @@ public class P4ClientsService {
 
         } catch (P4JavaException | URISyntaxException e) {
             System.err.println("Error: " + e.getMessage());
+
             // Error Response
             response.put("status", false);
             response.put("data", new ArrayList<>());
@@ -64,7 +59,8 @@ public class P4ClientsService {
         return response;
     }
 
-    public Map<String, Object> listAllReloadClientsService(Map<String,?> listReloadClientsBody) {
+
+    public Map<String, Object> listAllReloadClientsService(Map<String, ?> listReloadClientsBody) {
         Map<String, Object> response = new HashMap<>();
         ArrayList<String> clientsArr = new ArrayList<>();
 
@@ -75,31 +71,28 @@ public class P4ClientsService {
 
             GetClientsOptions getClientsOptions = new GetClientsOptions();
             getClientsOptions.setUserName((String) listReloadClientsBody.get("user"));
-            boolean unloaded = true;
-            getClientsOptions.setUnloaded(unloaded);
+            getClientsOptions.setUnloaded(true);
+
             List<IClientSummary> clientList = server.getClients(getClientsOptions);
-            if (clientList == null) {
-                System.err.println("Client list is null");
-                response.put("status", false);
-                response.put("data", new ArrayList<>());
-                response.put("error", "Client list is null");
-                return response;
-            }
-            for (IClientSummary clientSummary : clientList) {
-                if (clientSummary == null) {
-                    System.err.println("null Client in clients list");
-                    continue;
+
+            if (clientList != null && !clientList.isEmpty()) {
+                for (IClientSummary clientSummary : clientList) {
+                    clientsArr.add(clientSummary.getName());
                 }
-                clientsArr.add(clientSummary.getName());
+            } else {
+                clientsArr.add("No clients found.");
             }
 
             server.disconnect();
+
+            // Success Response
             response.put("status", true);
             response.put("data", clientsArr);
             response.put("error", null);
 
         } catch (P4JavaException | URISyntaxException e) {
             System.err.println("Error: " + e.getMessage());
+
             // Error Response
             response.put("status", false);
             response.put("data", new ArrayList<>());
@@ -107,8 +100,8 @@ public class P4ClientsService {
         }
 
         return response;
-
     }
+
 
     public Map<String, Object> deleteClientsService(Map<String, ?> deleteClientsListBody) {
         Map<String, Object> response = new HashMap<>();

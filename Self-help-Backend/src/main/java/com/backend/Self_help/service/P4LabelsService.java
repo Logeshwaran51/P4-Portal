@@ -80,41 +80,36 @@ public class P4LabelsService {
 
             GetLabelsOptions options = new GetLabelsOptions();
             options.setUserName((String) listReloadLabelsBody.get("user"));
-            options.setUnloaded(true);
+            options.setUnloaded(true);  // for reloaded/unloaded labels
 
             List<ILabelSummary> labels = server.getLabels(fileSpecs, options);
 
-            if (labels == null) {
-                System.err.println("Labels list is null");
-                response.put("status", false);
-                response.put("data", new ArrayList<>());
-                response.put("error", "Labels list is null");
-                return response;
-            }
-
-            for (ILabelSummary label : labels) {
-                if (label == null) {
-                    System.err.println("null Label in labels list");
-                    continue;
+            if (labels != null && !labels.isEmpty()) {
+                for (ILabelSummary label : labels) {
+                    labelsArr.add(label.getName());
                 }
-                labelsArr.add(label.getName());
+            } else {
+                // No labels found
+                labelsArr.add("No labels found.");
             }
 
             server.disconnect();
+
+            // Success response
             response.put("status", true);
             response.put("data", labelsArr);
             response.put("error", null);
 
         } catch (P4JavaException | URISyntaxException e) {
             System.err.println("Error: " + e.getMessage());
-            // Error Response
+
+            // Error response
             response.put("status", false);
             response.put("data", new ArrayList<>());
             response.put("error", e.getMessage());
         }
 
         return response;
-
     }
 
     public Map<String, Object> deleteLabelsService(Map<String, ?> deleteLabelsListBody) {
