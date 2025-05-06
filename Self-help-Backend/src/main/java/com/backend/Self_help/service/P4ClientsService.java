@@ -197,6 +197,8 @@ public class P4ClientsService {
             }
 
             UnloadOptions unloadOptions = new UnloadOptions();
+            boolean force = true;
+            unloadOptions.setForce(force);
 
             for (String clientName : clientNames) {
                 try {
@@ -256,6 +258,8 @@ public class P4ClientsService {
             }
 
             ReloadOptions reloadOptions = new ReloadOptions();
+            boolean force = true;
+            reloadOptions.setForce(force);
 
             for (String clientName : clientNames) {
                 try {

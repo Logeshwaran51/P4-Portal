@@ -207,6 +207,8 @@ public class P4LabelsService {
             }
 
             UnloadOptions unloadOptions = new UnloadOptions();
+            boolean force = true;
+            unloadOptions.setForce(force);
 
             for(String labelName : labelNames){
                 try {
@@ -273,7 +275,8 @@ public class P4LabelsService {
             }
 
             ReloadOptions reloadOptions = new ReloadOptions();
-
+            boolean force = true;
+            reloadOptions.setForce(force);
 
             for(String labelName : labelNames){
                 try {
