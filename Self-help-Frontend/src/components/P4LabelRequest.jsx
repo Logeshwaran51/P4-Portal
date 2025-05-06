@@ -174,7 +174,7 @@ const P4LabelRequest = () => {
 
   useEffect(() => {
     if (selectedServer) {
-      setlabelsDropdown()
+      setlabelsDropdown([])
       getLabels()
     }
   }, [labelRequest, selectedServer])
