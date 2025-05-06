@@ -1,5 +1,7 @@
 package com.backend.Self_help.service;
 
+import com.backend.Self_help.repository.JiraRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +25,10 @@ public class JiraService {
     @Value("${jira.url}")
     private String jiraUrl;
 
-    public Map<String, Object> jiraRequestService(JiraTicketRequest request){
+    @Autowired
+    private JiraRepo jiraRepo;
+
+    public Map<String, Object> jiraRequestService(JiraTicketRequest request) {
         Map<String, Object> response = new HashMap<>();
         String apiUrl = jiraUrl + "/rest/api/2/issue";
 
@@ -52,6 +57,10 @@ public class JiraService {
                 String ticketKey = (String) responseBody.get("key");
                 String ticketUrl = jiraUrl + "/browse/" + ticketKey;
 
+                // Set Jira URL in model and save to MongoDB
+                request.setJiraUrl(ticketUrl);
+                jiraRepo.save(request);
+
                 response.put("status", true);
                 response.put("data", ticketUrl); // Only URL in data
                 response.put("error", "");
@@ -69,8 +78,6 @@ public class JiraService {
         }
 
         return response;
-
-
     }
 
 }
